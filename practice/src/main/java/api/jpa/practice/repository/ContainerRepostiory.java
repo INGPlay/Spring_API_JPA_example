@@ -23,25 +23,22 @@ public class ContainerRepostiory {
 
         try {
             Long userId = containerForm.getUserId();
+            
+            // title 준비
             String title = containerForm.getTitle();
 
+            // user 준비
+            User user = em.find(User.class, userId);
+
             // Key 준비
-            ContainerIds containerIds = new ContainerIds();
-            containerIds.setUserId(userId);    // User 와 연관관계
-            //      ContainerIndex 1 증가
-            containerIds.setContainerId(sequenceRepository.plusOneContainerIndexByUserId(userId));
+            ContainerIds containerIds = getContainerIds(userId);
 
             // timeInform 준비
             TimeInform timeInform = new TimeInform(new Date(), new Date());
 
-            // Container 생성
-            Container container = new Container();
-
-            container.setContainerIds(containerIds);
-            container.setTimeInform(timeInform);
-            container.setTitle(title);
-            container.setUser(em.find(User.class, userId));
-
+            // -> Container 생성
+            Container container = new Container(user, containerIds, timeInform, title);
+            
             em.persist(container);
             
         } catch (Exception e){
@@ -50,5 +47,16 @@ public class ContainerRepostiory {
         }
 
         return true;
+    }
+
+
+    private ContainerIds getContainerIds(Long userId) {
+        ContainerIds containerIds = new ContainerIds();
+        containerIds.setUserId(userId);
+
+        // ContainerIndex 1 증가
+        Long containerIndex = sequenceRepository.plusOneContainerIndexByUserId(userId);
+        containerIds.setContainerId(containerIndex);
+        return containerIds;
     }
 }

@@ -1,30 +1,29 @@
 package api.jpa.practice.entity.sequenceTables;
 
+import api.jpa.practice.entity.Container;
 import api.jpa.practice.entity.User;
-import api.jpa.practice.entity.enums.UserRole;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
-import org.springframework.lang.Nullable;
 
 import javax.persistence.*;
 
 @Entity
-@Table(name = "Container_SEQ")
+@Table(name = "POST_SEQ")
 @Getter @Setter
 @NoArgsConstructor
-public class ContainerSequence {
+public class PostSequence {
 
     @Id @GeneratedValue(strategy = GenerationType.IDENTITY)
-    @Column(name = "user_id")
+    @Column(name = "post_sequence_id")
     private Long id;
 
     @Column(nullable = false)
     private Long sequenceIndex = 0L;
 
-    @OneToOne(mappedBy = "containerSequence")
-    private User user;
-    public ContainerSequence(Long sequenceIndex) {
+    @OneToOne(mappedBy = "postSequence")
+    private Container container;
+    public PostSequence(Long sequenceIndex) {
         this.sequenceIndex = sequenceIndex;
     }
 }

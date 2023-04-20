@@ -31,15 +31,14 @@ public class User {
 
     @OneToMany
     @JoinColumn(name = "container_id")
-    private List<Container> container = new ArrayList<>();
+    private List<Container> containers = new ArrayList<>();
 
-    @OneToOne
-    @MapsId("id")     // FK를 PK로
+    @OneToOne(fetch = FetchType.LAZY, cascade = {CascadeType.ALL})
     @JoinColumn(name = "user_id")
     private ContainerSequence containerSequence;
 
     public void addContainer(Container container){
         container.setUser(this);
-        this.container.add(container);
+        this.containers.add(container);
     }
 }
