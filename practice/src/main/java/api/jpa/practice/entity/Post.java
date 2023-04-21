@@ -14,15 +14,13 @@ import javax.swing.border.TitledBorder;
 @Getter @Setter
 @NoArgsConstructor
 public class Post {
-    @EmbeddedId
-    private PostIds postIds;
+
+    @Id @GeneratedValue(strategy = GenerationType.IDENTITY)
+    @Column(name = "post_id")
+    private Long postId;
 
     @ManyToOne(fetch = FetchType.LAZY)
-    @MapsId("containerIds")     // 빨간줄 무시하기, 부모의 id가 들어가야 되므로 이게 맞음.
-    @JoinColumns({
-            @JoinColumn(name = "user_id"),
-            @JoinColumn(name = "container_id")
-    })
+    @JoinColumn(name = "container_id")
     private Container container;
 
     @Embedded

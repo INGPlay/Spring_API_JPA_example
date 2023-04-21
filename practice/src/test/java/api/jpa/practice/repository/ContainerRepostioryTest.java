@@ -1,6 +1,6 @@
 package api.jpa.practice.repository;
 
-import api.jpa.practice.domain.request.ContainerForm;
+import api.jpa.practice.domain.request.ContainerFormWithUserId;
 import api.jpa.practice.domain.request.RegisterForm;
 import api.jpa.practice.entity.enums.UserRole;
 import lombok.extern.slf4j.Slf4j;
@@ -10,8 +10,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.test.annotation.Rollback;
 import org.springframework.transaction.annotation.Transactional;
-
-import static org.junit.jupiter.api.Assertions.*;
 
 @Transactional
 @SpringBootTest
@@ -44,11 +42,11 @@ class ContainerRepostioryTest {
     @Test
     @Rollback(value = false)
     void insertContainerTest(){
-        ContainerForm containerForm = new ContainerForm();
-        containerForm.setTitle("아아");
-        containerForm.setUserId(1L);
+        ContainerFormWithUserId containerFormWithUserId = new ContainerFormWithUserId();
+        containerFormWithUserId.setTitle("아아");
+        containerFormWithUserId.setUserId(1L);
 
-        boolean isInserted = containerRepostiory.insertContainerByContainerForm(containerForm);
+        boolean isInserted = containerRepostiory.insertContainerWithUserId(containerFormWithUserId);
 
         log.info("isInserted : {}", isInserted);
     }

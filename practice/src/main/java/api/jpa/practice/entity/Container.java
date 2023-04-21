@@ -1,9 +1,6 @@
 package api.jpa.practice.entity;
 
-import api.jpa.practice.entity.embeddables.ContainerIds;
 import api.jpa.practice.entity.embeddables.TimeInform;
-import api.jpa.practice.entity.sequenceTables.ContainerSequence;
-import api.jpa.practice.entity.sequenceTables.PostSequence;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
@@ -16,34 +13,26 @@ import java.util.List;
 @Getter @Setter
 @NoArgsConstructor
 public class Container {
-    @EmbeddedId
-    private ContainerIds containerIds;
+
+    @Id @GeneratedValue(strategy = GenerationType.IDENTITY)
+    @Column(name = "container_id")
+    private Long containerId;
 
     @ManyToOne(fetch = FetchType.LAZY)
-    @MapsId("userId")
     @JoinColumn(name = "user_id")
     private User user;
 
     @Embedded
     private TimeInform timeInform;
 
-    @Column(nullable = false, unique = true)
+    @Column(nullable = false)
     private String title;
 
-    @OneToMany
-    @JoinColumns({
-            @JoinColumn(name = "user_id"),
-            @JoinColumn(name = "container_id")
-    })
+    @OneToMany(mappedBy = "container", cascade = CascadeType.ALL)
     private List<Post> posts = new ArrayList<>();
 
-    @OneToOne(fetch = FetchType.LAZY, cascade = {CascadeType.ALL})
-    @JoinColumn(name = "post_sequence_id")
-    private PostSequence postSequence;
-
-    public Container(User user, ContainerIds containerIds, TimeInform timeInform, String title) {
-        this.user = user;
-        this.containerIds = containerIds;
+    public Container(User user, TimeInform timeInform, String title) {
+        setUser(user);
         this.timeInform = timeInform;
         this.title = title;
     }

@@ -2,8 +2,8 @@ package api.jpa.practice.entity;
 
 import api.jpa.practice.entity.embeddables.TimeInform;
 import api.jpa.practice.entity.enums.UserRole;
-import api.jpa.practice.entity.sequenceTables.ContainerSequence;
 import lombok.Getter;
+import lombok.NoArgsConstructor;
 import lombok.Setter;
 
 import javax.persistence.*;
@@ -12,6 +12,7 @@ import java.util.List;
 
 @Entity
 @Getter @Setter
+@NoArgsConstructor
 public class User {
     @Id @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "user_id")
@@ -29,13 +30,15 @@ public class User {
     @Embedded
     private TimeInform timeInform;
 
-    @OneToMany
-    @JoinColumn(name = "container_id")
+    @OneToMany(mappedBy = "user", cascade = CascadeType.ALL)
     private List<Container> containers = new ArrayList<>();
 
-    @OneToOne(fetch = FetchType.LAZY, cascade = {CascadeType.ALL})
-    @JoinColumn(name = "user_id")
-    private ContainerSequence containerSequence;
+    public User(String username, String password, UserRole userRole, TimeInform timeInform) {
+        this.username = username;
+        this.password = password;
+        this.userRole = userRole;
+        this.timeInform = timeInform;
+    }
 
     public void addContainer(Container container){
         container.setUser(this);

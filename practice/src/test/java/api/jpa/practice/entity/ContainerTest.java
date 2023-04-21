@@ -1,10 +1,8 @@
 package api.jpa.practice.entity;
 
 import api.jpa.practice.domain.request.RegisterForm;
-import api.jpa.practice.entity.embeddables.ContainerIds;
 import api.jpa.practice.entity.embeddables.TimeInform;
 import api.jpa.practice.entity.enums.UserRole;
-import api.jpa.practice.repository.SequenceRepository;
 import api.jpa.practice.repository.UserRepository;
 import lombok.extern.slf4j.Slf4j;
 import org.junit.jupiter.api.BeforeEach;
@@ -24,8 +22,6 @@ import java.util.Date;
 class ContainerTest {
     @Autowired
     private UserRepository userRepository;
-    @Autowired
-    private SequenceRepository sequenceRepository;
 
     @Autowired
     private EntityManager em;
@@ -52,18 +48,12 @@ class ContainerTest {
     @Test
     @Rollback(value = false)
     void findTest(){
-        User user = userRepository.findUserDTOByUsername("faraway").get();
-
-        Long findIndex = sequenceRepository.getContainerIndexByUserId(user.getId()).get();
-
-        ContainerIds containerIds = new ContainerIds();
-        containerIds.setUserId(user.getId());
-        containerIds.setContainerId(findIndex);
+        User user = userRepository.findUserByUsername("faraway").get();
 
         TimeInform timeInform = new TimeInform(new Date(), new Date());
 
         Container container = new Container();
-        container.setContainerIds(containerIds);
+        container.setUser(user);
         container.setTitle("ddd");
         container.setTimeInform(timeInform);
 
