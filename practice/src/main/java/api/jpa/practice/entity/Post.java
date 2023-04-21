@@ -1,14 +1,12 @@
 package api.jpa.practice.entity;
 
-import api.jpa.practice.entity.embeddables.ContainerIds;
-import api.jpa.practice.entity.embeddables.PostIds;
 import api.jpa.practice.entity.embeddables.TimeInform;
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 
 import javax.persistence.*;
-import javax.swing.border.TitledBorder;
 
 @Entity
 @Getter @Setter
@@ -19,6 +17,7 @@ public class Post {
     @Column(name = "post_id")
     private Long postId;
 
+    @JsonIgnore
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "container_id")
     private Container container;

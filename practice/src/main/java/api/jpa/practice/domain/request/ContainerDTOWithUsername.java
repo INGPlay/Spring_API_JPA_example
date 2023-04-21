@@ -8,7 +8,7 @@ import lombok.Setter;
 @NoArgsConstructor
 @AllArgsConstructor
 @Getter @Setter
-public class ContainerFormWithUserId {
-    private Long userId;
+public class ContainerDTOWithUsername {
+    private String username;
     private String title;
 }

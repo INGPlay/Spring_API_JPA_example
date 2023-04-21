@@ -1,14 +1,15 @@
 package api.jpa.practice.domain.request;
 
+import api.jpa.practice.entity.User;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 
-@NoArgsConstructor
 @AllArgsConstructor
+@NoArgsConstructor
 @Getter @Setter
-public class ContainerFormWithUsername {
-    private String username;
+public class ContainerDTO {
+    private User user;
     private String title;
 }

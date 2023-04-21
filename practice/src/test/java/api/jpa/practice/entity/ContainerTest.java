@@ -1,6 +1,6 @@
 package api.jpa.practice.entity;
 
-import api.jpa.practice.domain.request.RegisterForm;
+import api.jpa.practice.domain.request.RegisterDTO;
 import api.jpa.practice.entity.embeddables.TimeInform;
 import api.jpa.practice.entity.enums.UserRole;
 import api.jpa.practice.repository.UserRepository;
@@ -28,18 +28,18 @@ class ContainerTest {
 
     @BeforeEach
     void setUp() {
-        RegisterForm registerForm = new RegisterForm();
-        registerForm.setUsername("faraway");
-        registerForm.setPassword("dddd");
-        registerForm.setUserRole(UserRole.ADMIN);
+        RegisterDTO registerDTO = new RegisterDTO();
+        registerDTO.setUsername("faraway");
+        registerDTO.setPassword("dddd");
+        registerDTO.setUserRole(UserRole.ADMIN);
 
-        RegisterForm registerForm1 = new RegisterForm();
-        registerForm1.setUsername("asdf");
-        registerForm1.setPassword("aaaa");
-        registerForm1.setUserRole(UserRole.NORMAL);
+        RegisterDTO registerDTO1 = new RegisterDTO();
+        registerDTO1.setUsername("asdf");
+        registerDTO1.setPassword("aaaa");
+        registerDTO1.setUserRole(UserRole.NORMAL);
 
-        boolean isInserted = userRepository.insertUserByRegisterForm(registerForm);
-        boolean isInserted1 = userRepository.insertUserByRegisterForm(registerForm1);
+        boolean isInserted = userRepository.insertUserByRegisterDTO(registerDTO);
+        boolean isInserted1 = userRepository.insertUserByRegisterDTO(registerDTO1);
 
         log.info("isInserted : {}", isInserted);
         log.info("isInserted1 : {}", isInserted1);

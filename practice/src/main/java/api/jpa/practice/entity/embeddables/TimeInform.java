@@ -10,14 +10,22 @@ import javax.persistence.Temporal;
 import javax.persistence.TemporalType;
 import java.util.Date;
 
-@Getter @Setter
 @Embeddable
+@Getter
 @AllArgsConstructor
-@NoArgsConstructor
 public class TimeInform {
     @Temporal(TemporalType.TIMESTAMP)
     private Date createdTime;
 
     @Temporal(TemporalType.TIMESTAMP)
     private Date updatedTime;
+
+    public TimeInform() {
+        this.createdTime = new Date();
+        this.updatedTime = new Date();
+    }
+
+    public void renewUpdatedTiem(){
+        this.updatedTime = new Date();
+    }
 }

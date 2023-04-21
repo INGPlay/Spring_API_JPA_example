@@ -5,7 +5,7 @@ import lombok.Getter;
 import lombok.Setter;
 
 @Getter @Setter
-public class PostForm {
+public class PostDTO {
     private Container container;
     private String title;
     private String content;

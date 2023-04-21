@@ -1,8 +1,8 @@
 package api.jpa.practice.repository;
 
-import api.jpa.practice.domain.request.ContainerForm;
-import api.jpa.practice.domain.request.ContainerFormWithUserId;
-import api.jpa.practice.domain.request.ContainerFormWithUsername;
+import api.jpa.practice.domain.request.ContainerDTO;
+import api.jpa.practice.domain.request.ContainerDTOWithUserId;
+import api.jpa.practice.domain.request.ContainerDTOWithUsername;
 import api.jpa.practice.entity.Container;
 import api.jpa.practice.entity.User;
 import api.jpa.practice.entity.embeddables.TimeInform;
@@ -11,6 +11,7 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Repository;
 
 import javax.persistence.EntityManager;
+import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 import java.util.Optional;
@@ -22,13 +23,13 @@ public class ContainerRepostiory {
     private final EntityManager em;
     private final UserRepository userRepository;
 
-    public boolean insertContainerByContainerForm(ContainerForm containerForm){
+    public boolean insertContainerByContainerForm(ContainerDTO containerDTO){
         try {
             // user 준비
-            User user = containerForm.getUser();
+            User user = containerDTO.getUser();
 
             // title 준비
-            String title = containerForm.getTitle();
+            String title = containerDTO.getTitle();
 
             // timeInform 준비
             TimeInform timeInform = new TimeInform(new Date(), new Date());
@@ -45,13 +46,13 @@ public class ContainerRepostiory {
 
         return true;
     }
-    public boolean insertContainerWithUserId(ContainerFormWithUserId containerFormWithUserId){
+    public boolean insertContainerWithUserId(ContainerDTOWithUserId containerDTOWithUserId){
 
         try {
-            Long userId = containerFormWithUserId.getUserId();
+            Long userId = containerDTOWithUserId.getUserId();
             
             // title 준비
-            String title = containerFormWithUserId.getTitle();
+            String title = containerDTOWithUserId.getTitle();
 
             // user 준비
             User user = em.find(User.class, userId);
@@ -72,13 +73,13 @@ public class ContainerRepostiory {
         return true;
     }
 
-    public boolean insertContainerWithUsername(ContainerFormWithUsername containerFormWithUsername){
+    public boolean insertContainerWithUsername(ContainerDTOWithUsername containerDTOWithUsername){
 
         try {
-            String username = containerFormWithUsername.getUsername();
+            String username = containerDTOWithUsername.getUsername();
 
             // title 준비
-            String title = containerFormWithUsername.getTitle();
+            String title = containerDTOWithUsername.getTitle();
 
             // user 준비
             User user = userRepository.findUserByUsername(username).orElseThrow(()-> {
@@ -107,17 +108,20 @@ public class ContainerRepostiory {
         );
     }
 
-    public List<Container> findContainersByUsername(String username){
-        User user = userRepository.findUserByUsername(username).orElseThrow(() -> {
-            return new RuntimeException("username으로 User를 찾을 수 없음");
-        });
+    public List<Container> findContainersByUser(User user){
 
-        List<Container> containers = em.createQuery(
-                        "select c from Container c" +
-                                " where c.user = :user", Container.class)
-                .setParameter("user", user)
-                .getResultList();
+        try {
+            List<Container> containers = em.createQuery(
+                            "select c from Container c" +
+                                    " where c.user = :user", Container.class)
+                    .setParameter("user", user)
+                    .getResultList();
 
-        return containers;
+            return containers;
+
+        } catch (Exception e){
+            e.printStackTrace();
+            return new ArrayList<>();
+        }
     }
 }

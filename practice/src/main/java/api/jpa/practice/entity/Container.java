@@ -1,6 +1,7 @@
 package api.jpa.practice.entity;
 
 import api.jpa.practice.entity.embeddables.TimeInform;
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
@@ -18,6 +19,7 @@ public class Container {
     @Column(name = "container_id")
     private Long containerId;
 
+    @JsonIgnore
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "user_id")
     private User user;

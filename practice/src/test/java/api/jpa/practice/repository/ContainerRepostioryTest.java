@@ -1,7 +1,7 @@
 package api.jpa.practice.repository;
 
-import api.jpa.practice.domain.request.ContainerFormWithUserId;
-import api.jpa.practice.domain.request.RegisterForm;
+import api.jpa.practice.domain.request.ContainerDTOWithUserId;
+import api.jpa.practice.domain.request.RegisterDTO;
 import api.jpa.practice.entity.enums.UserRole;
 import lombok.extern.slf4j.Slf4j;
 import org.junit.jupiter.api.BeforeEach;
@@ -23,18 +23,18 @@ class ContainerRepostioryTest {
 
     @BeforeEach
     void beforeEach(){
-        RegisterForm registerForm = new RegisterForm();
-        registerForm.setUsername("faraway");
-        registerForm.setPassword("origin");
-        registerForm.setUserRole(UserRole.ADMIN);
+        RegisterDTO registerDTO = new RegisterDTO();
+        registerDTO.setUsername("faraway");
+        registerDTO.setPassword("origin");
+        registerDTO.setUserRole(UserRole.ADMIN);
 
-        boolean isInserted = userRepository.insertUserByRegisterForm(registerForm);
+        boolean isInserted = userRepository.insertUserByRegisterDTO(registerDTO);
 
-        RegisterForm registerForm2 = new RegisterForm();
-        registerForm2.setUsername("faraway2");
-        registerForm2.setPassword("admin");
-        registerForm2.setUserRole(UserRole.ADMIN);
-        boolean isInserted2 = userRepository.insertUserByRegisterForm(registerForm2);
+        RegisterDTO registerDTO2 = new RegisterDTO();
+        registerDTO2.setUsername("faraway2");
+        registerDTO2.setPassword("admin");
+        registerDTO2.setUserRole(UserRole.ADMIN);
+        boolean isInserted2 = userRepository.insertUserByRegisterDTO(registerDTO2);
 
         log.info("isInserted : {}, isInserted2 : {}", isInserted, isInserted2);
     }
@@ -42,11 +42,11 @@ class ContainerRepostioryTest {
     @Test
     @Rollback(value = false)
     void insertContainerTest(){
-        ContainerFormWithUserId containerFormWithUserId = new ContainerFormWithUserId();
-        containerFormWithUserId.setTitle("아아");
-        containerFormWithUserId.setUserId(1L);
+        ContainerDTOWithUserId containerDTOWithUserId = new ContainerDTOWithUserId();
+        containerDTOWithUserId.setTitle("아아");
+        containerDTOWithUserId.setUserId(1L);
 
-        boolean isInserted = containerRepostiory.insertContainerWithUserId(containerFormWithUserId);
+        boolean isInserted = containerRepostiory.insertContainerWithUserId(containerDTOWithUserId);
 
         log.info("isInserted : {}", isInserted);
     }

@@ -1,9 +1,8 @@
 package api.jpa.practice.repository;
 
-import api.jpa.practice.domain.request.PostForm;
+import api.jpa.practice.domain.request.PostDTO;
 import api.jpa.practice.entity.Container;
 import api.jpa.practice.entity.Post;
-import api.jpa.practice.entity.User;
 import api.jpa.practice.entity.embeddables.TimeInform;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Repository;
@@ -18,12 +17,12 @@ public class PostRepostiory {
 
     private final EntityManager em;
 
-    public boolean insertPostByPostForm(PostForm postForm){
+    public boolean insertPostByPostForm(PostDTO postDTO){
 
         try{
-            Container container  = postForm.getContainer();
-            String title = postForm.getTitle();
-            String content = postForm.getContent();
+            Container container  = postDTO.getContainer();
+            String title = postDTO.getTitle();
+            String content = postDTO.getContent();
             TimeInform timeInform = new TimeInform(new Date(), new Date());
 
             Post post = new Post();
