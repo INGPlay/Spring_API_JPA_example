@@ -1,8 +1,10 @@
 package api.jpa.practice.service;
 
 import api.jpa.practice.domain.form.ContainerForm;
+import api.jpa.practice.domain.request.ContainerDTO;
 import api.jpa.practice.domain.request.ContainerDTOWithUserId;
 import api.jpa.practice.domain.request.ContainerDTOWithUsername;
+import api.jpa.practice.domain.request.UpdateContainerDTO;
 import api.jpa.practice.domain.response.ResponseWrapper;
 import api.jpa.practice.entity.Container;
 import api.jpa.practice.entity.User;
@@ -65,4 +67,39 @@ public class ContainerService {
 
     }
 
+    @Transactional
+    public ResponseWrapper searchContainers(ContainerForm containerForm){
+        ResponseWrapper responseWrapper = new ResponseWrapper();
+
+        Optional<User> optionalUser = userRepository.findUserByUsername(containerForm.getUsername());
+        if (optionalUser.isEmpty()){
+            responseWrapper.setErrorMessage("대상이 없습니다.");
+            return responseWrapper;
+        }
+
+        List<Container> containers = containerRepostiory.searchContainers(optionalUser.get(), containerForm.getContainerTitle());
+        responseWrapper.setObject(containers);
+
+        return responseWrapper;
+    }
+
+    @Transactional
+    public ResponseWrapper deleteContainerByContainerId(Long containerId){
+        ResponseWrapper responseWrapper = new ResponseWrapper();
+
+        Optional<Container> optionalContainer = containerRepostiory.findContainerById(containerId);
+
+        if (optionalContainer.isEmpty()){
+            responseWrapper.setErrorMessage("삭제할 대상이 없습니다.");
+            return responseWrapper;
+        }
+
+        boolean result = containerRepostiory.deleteContainer(optionalContainer.get());
+
+        Map<String, Boolean> resultMap = new HashMap<>();
+        resultMap.put("isDeleted", result);
+        responseWrapper.setObject(resultMap);
+
+        return responseWrapper;
+    }
 }

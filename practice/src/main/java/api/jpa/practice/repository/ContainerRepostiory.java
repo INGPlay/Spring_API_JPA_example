@@ -6,6 +6,7 @@ import api.jpa.practice.domain.request.ContainerDTOWithUsername;
 import api.jpa.practice.entity.Container;
 import api.jpa.practice.entity.User;
 import api.jpa.practice.entity.embeddables.TimeInform;
+import api.jpa.practice.service.ContainerService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Repository;
@@ -108,6 +109,17 @@ public class ContainerRepostiory {
         );
     }
 
+    public boolean deleteContainer(Container container){
+        try {
+            em.remove(container);
+
+            return true;
+        } catch (Exception e){
+            return false;
+        }
+
+    }
+
     public List<Container> findContainersByUser(User user){
 
         try {
@@ -119,6 +131,22 @@ public class ContainerRepostiory {
 
             return containers;
 
+        } catch (Exception e){
+            e.printStackTrace();
+            return new ArrayList<>();
+        }
+    }
+
+    public List<Container> searchContainers(User user, String title){
+        try{
+            List<Container> containers = em.createQuery(
+                    "select c from Container c" +
+                            " where c.user = :user and c.title like concat('%', :title, '%')", Container.class)
+                    .setParameter("user", user)
+                    .setParameter("title", title)
+                    .getResultList();
+
+            return containers;
         } catch (Exception e){
             e.printStackTrace();
             return new ArrayList<>();

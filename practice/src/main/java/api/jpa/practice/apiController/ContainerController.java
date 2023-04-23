@@ -1,9 +1,9 @@
 package api.jpa.practice.apiController;
 
 import api.jpa.practice.domain.form.ContainerForm;
-import api.jpa.practice.domain.form.UpdateContainerForm;
-import api.jpa.practice.domain.request.ContainerDTO;
+import api.jpa.practice.domain.form.SubmitContainerForm;
 import api.jpa.practice.domain.response.ResponseWrapper;
+import api.jpa.practice.entity.Container;
 import api.jpa.practice.service.ContainerService;
 import api.jpa.practice.service.UserService;
 import lombok.RequiredArgsConstructor;
@@ -23,27 +23,37 @@ public class ContainerController {
     }
 
     @PostMapping("/user/{username}/container")
-    public ResponseWrapper createContainer(@PathVariable String username,
-                                           @RequestBody String containerTitle){
+    public ResponseWrapper createContainer(@PathVariable(name = "username") String username,
+                                           @RequestBody SubmitContainerForm submitContainerForm){
+
         ContainerForm containerForm = new ContainerForm();
         containerForm.setUsername(username);
-        containerForm.setContainerTitle(containerTitle);
+        containerForm.setContainerTitle(submitContainerForm.getContainerTitle());
 
         return containerService.createContainer(containerForm);
     }
 
     @GetMapping("/user/{username}/container/{containerTitle}")
-    public ResponseWrapper getContainer(@PathVariable ContainerForm containerForm){
-        return new ResponseWrapper();
+    public ResponseWrapper searchContainers(@PathVariable(name = "username") String username,
+                                            @PathVariable(name = "containerTitle") String containerTitle){
+        ContainerForm containerForm = new ContainerForm();
+        containerForm.setUsername(username);
+        containerForm.setContainerTitle(containerTitle);
+
+        return containerService.searchContainers(containerForm);
     }
 
-    @DeleteMapping("/user/{username}/container/{containerTitle}")
-    public ResponseWrapper deleteContainer(@PathVariable ContainerForm containerForm){
-        return new ResponseWrapper();
+    @DeleteMapping("/user/{username}/container/{containerId}")
+    public ResponseWrapper deleteContainer(@PathVariable Long containerId){
+
+        return containerService.deleteContainerByContainerId(containerId);
     }
 
-    @PutMapping("/user/{username}/container/{containerTitle}")
-    public ResponseWrapper updateContainer(@RequestBody UpdateContainerForm updateContainerForm){
+    @PutMapping("/user/{username}/container/{containerId}")
+    public ResponseWrapper updateContainer(@PathVariable(name = "username") String username,
+                                           @PathVariable(name = "containerId") Long containerId,
+                                           @RequestBody SubmitContainerForm submitContainerForm){
+
         return new ResponseWrapper();
     }
 }

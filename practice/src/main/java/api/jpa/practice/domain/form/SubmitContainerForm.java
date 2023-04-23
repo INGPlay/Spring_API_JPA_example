@@ -4,5 +4,6 @@ import lombok.Getter;
 import lombok.Setter;
 
 @Getter @Setter
-public class UpdateContainerForm {
+public class SubmitContainerForm {
+    private String containerTitle;
 }
