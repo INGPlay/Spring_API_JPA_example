@@ -18,6 +18,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
+import java.util.stream.Collectors;
 
 @Service
 @RequiredArgsConstructor
@@ -99,6 +100,44 @@ public class ContainerService {
         Map<String, Boolean> resultMap = new HashMap<>();
         resultMap.put("isDeleted", result);
         responseWrapper.setObject(resultMap);
+
+        return responseWrapper;
+    }
+
+    @Transactional
+    public ResponseWrapper updateContainer(UpdateContainerDTO updateContainerDTO){
+        ResponseWrapper responseWrapper = new ResponseWrapper();
+
+        Optional<User> optionalUser = userRepository.findUserByUsername(updateContainerDTO.getUsername());
+        if (optionalUser.isEmpty()){
+            responseWrapper.setErrorMessage("대상 유저가 없습니다.");
+            return responseWrapper;
+        }
+
+        List<Container> containers = optionalUser.get().getContainers();
+
+        if (containers.size() <= 0){
+            responseWrapper.setErrorMessage("대상 유저가 컨테이너를 가지고 있지 않습니다.");
+            return responseWrapper;
+        }
+
+        Optional<Container> optionalTargetContainer = containers.stream()
+                .filter(c -> c.getContainerId().equals(updateContainerDTO.getTargetContainerId()))
+                .findAny();
+
+        if (optionalTargetContainer.isEmpty()){
+            responseWrapper.setErrorMessage("유저에게서 대상 컨테이너를 찾을 수 없습니다.");
+        }
+
+        Container targetContainer = optionalTargetContainer.get();
+
+        String tempOldTitle = targetContainer.getTitle();
+        targetContainer.setTitle(updateContainerDTO.getSubmitContainerForm().getContainerTitle());
+
+        responseWrapper.setObject(new Object(){
+            public String oldTitle = tempOldTitle;
+            public String updatedTitle = updateContainerDTO.getSubmitContainerForm().getContainerTitle();
+        });
 
         return responseWrapper;
     }

@@ -2,6 +2,7 @@ package api.jpa.practice.apiController;
 
 import api.jpa.practice.domain.form.ContainerForm;
 import api.jpa.practice.domain.form.SubmitContainerForm;
+import api.jpa.practice.domain.request.UpdateContainerDTO;
 import api.jpa.practice.domain.response.ResponseWrapper;
 import api.jpa.practice.entity.Container;
 import api.jpa.practice.service.ContainerService;
@@ -54,6 +55,11 @@ public class ContainerController {
                                            @PathVariable(name = "containerId") Long containerId,
                                            @RequestBody SubmitContainerForm submitContainerForm){
 
-        return new ResponseWrapper();
+        UpdateContainerDTO updateContainerDTO = new UpdateContainerDTO();
+        updateContainerDTO.setUsername(username);
+        updateContainerDTO.setTargetContainerId(containerId);
+        updateContainerDTO.setSubmitContainerForm(submitContainerForm);
+
+        return containerService.updateContainer(updateContainerDTO);
     }
 }

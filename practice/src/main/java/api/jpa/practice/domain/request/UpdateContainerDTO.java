@@ -6,6 +6,7 @@ import lombok.Setter;
 
 @Getter @Setter
 public class UpdateContainerDTO {
+    private String username;
     private Long targetContainerId;
     private SubmitContainerForm submitContainerForm;
 }
