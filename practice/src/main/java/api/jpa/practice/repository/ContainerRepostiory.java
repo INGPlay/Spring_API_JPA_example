@@ -2,11 +2,9 @@ package api.jpa.practice.repository;
 
 import api.jpa.practice.domain.request.ContainerDTO;
 import api.jpa.practice.domain.request.ContainerDTOWithUserId;
-import api.jpa.practice.domain.request.ContainerDTOWithUsername;
 import api.jpa.practice.entity.Container;
 import api.jpa.practice.entity.User;
 import api.jpa.practice.entity.embeddables.TimeInform;
-import api.jpa.practice.service.ContainerService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Repository;
@@ -30,7 +28,7 @@ public class ContainerRepostiory {
             User user = containerDTO.getUser();
 
             // title 준비
-            String title = containerDTO.getTitle();
+            String title = containerDTO.getContainerTitle();
 
             // timeInform 준비
             TimeInform timeInform = new TimeInform(new Date(), new Date());
@@ -74,18 +72,11 @@ public class ContainerRepostiory {
         return true;
     }
 
-    public boolean insertContainerWithUsername(ContainerDTOWithUsername containerDTOWithUsername){
+    public boolean insertContainer(ContainerDTO containerDTO){
 
         try {
-            String username = containerDTOWithUsername.getUsername();
-
-            // title 준비
-            String title = containerDTOWithUsername.getTitle();
-
-            // user 준비
-            User user = userRepository.findUserByUsername(username).orElseThrow(()-> {
-                return new RuntimeException("username으로 User를 찾을 수 없음");
-            });
+            User user = containerDTO.getUser();
+            String title = containerDTO.getContainerTitle();
 
             // timeInform 준비
             TimeInform timeInform = new TimeInform(new Date(), new Date());
@@ -107,6 +98,16 @@ public class ContainerRepostiory {
         return Optional.ofNullable(
                 em.find(Container.class, containerId)
         );
+    }
+
+    public Optional<Container> findContainer(ContainerDTO containerDTO) {
+        return em.createQuery(
+                    "select c from Container c" +
+                            " where c.user = :user and c.title = :containerTitle", Container.class)
+                .setParameter("user", containerDTO.getUser())
+                .setParameter("containerTitle", containerDTO.getContainerTitle())
+                .getResultStream()
+                .findAny();
     }
 
     public boolean deleteContainer(Container container){
@@ -135,6 +136,15 @@ public class ContainerRepostiory {
             e.printStackTrace();
             return new ArrayList<>();
         }
+    }
+
+    public Optional<Container> findContainer(User user, String title){
+        return em.createQuery(
+                "select c from Container c" +
+                        " where c.user = :user and c.title = :title", Container.class)
+                .setParameter("user", user)
+                .setParameter("title", title)
+                .getResultStream().findAny();
     }
 
     public List<Container> searchContainers(User user, String title){

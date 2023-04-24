@@ -15,14 +15,14 @@ import org.springframework.web.bind.annotation.*;
 @RequiredArgsConstructor
 @Slf4j
 public class ContainerController {
-    private final UserService userService;
     private final ContainerService containerService;
 
-    @GetMapping("/user/{username}/container")
+    @GetMapping("/user/{username}/container-list")
     public ResponseWrapper getContainers(@PathVariable String username){
         return containerService.findContainersByUsername(username);
     }
 
+    // containerTitle이 userId가 같다면 겹치지 않도록 설정
     @PostMapping("/user/{username}/container")
     public ResponseWrapper createContainer(@PathVariable(name = "username") String username,
                                            @RequestBody SubmitContainerForm submitContainerForm){
@@ -34,7 +34,7 @@ public class ContainerController {
         return containerService.createContainer(containerForm);
     }
 
-    @GetMapping("/user/{username}/container/{containerTitle}")
+    @GetMapping("/user/{username}/container-list/{containerTitle}")
     public ResponseWrapper searchContainers(@PathVariable(name = "username") String username,
                                             @PathVariable(name = "containerTitle") String containerTitle){
         ContainerForm containerForm = new ContainerForm();
@@ -42,6 +42,16 @@ public class ContainerController {
         containerForm.setContainerTitle(containerTitle);
 
         return containerService.searchContainers(containerForm);
+    }
+
+    @GetMapping("/user/{username}/container/{containerTitle}")
+    public ResponseWrapper findContainer(@PathVariable(name = "username") String username,
+                                            @PathVariable(name = "containerTitle") String containerTitle){
+        ContainerForm containerForm = new ContainerForm();
+        containerForm.setUsername(username);
+        containerForm.setContainerTitle(containerTitle);
+
+        return containerService.findContainer(containerForm);
     }
 
     @DeleteMapping("/user/{username}/container/{containerId}")

@@ -8,18 +8,16 @@ import api.jpa.practice.domain.response.UserInformResponse;
 import api.jpa.practice.entity.User;
 import api.jpa.practice.entity.enums.UserRole;
 import api.jpa.practice.repository.UserRepository;
+import api.jpa.practice.service.component.ResultSupporter;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-
-import java.util.HashMap;
-import java.util.Map;
-import java.util.Optional;
 
 @Service
 @RequiredArgsConstructor
 public class UserService {
     private final UserRepository userRepository;
+    private final ResultSupporter resultSupporter;
 
     @Transactional
     public ResponseWrapper insertUserByRegisterForm(RegisterForm registerForm){
@@ -65,19 +63,16 @@ public class UserService {
 
         ResponseWrapper responseWrapper = new ResponseWrapper();
 
-        Optional<User> optionalUser = userRepository.findUserByUsername(username);
-        if (optionalUser.isEmpty()){
-            responseWrapper.setErrorMessage("대상이 없습니다.");
+        User userResult = resultSupporter.getUserResult(responseWrapper, username);
+        if (userResult == null){
             return responseWrapper;
         }
 
-        User user = optionalUser.get();
-
         UserInformResponse userinformResponse = new UserInformResponse();
-        userinformResponse.setUsername(user.getUsername());
-        userinformResponse.setUserRole(user.getUserRole());
-        userinformResponse.setTimeInform(user.getTimeInform());
-        userinformResponse.setContainer(user.getContainers());
+        userinformResponse.setUsername(userResult.getUsername());
+        userinformResponse.setUserRole(userResult.getUserRole());
+        userinformResponse.setTimeInform(userResult.getTimeInform());
+        userinformResponse.setContainer(userResult.getContainers());
 
         responseWrapper.setObject(userinformResponse);
         return responseWrapper;
@@ -87,19 +82,16 @@ public class UserService {
     public ResponseWrapper deleteUserByUsername(String username){
         ResponseWrapper responseWrapper = new ResponseWrapper();
 
-        Optional<User> optionalUser = userRepository.findUserByUsername(username);
-        if (optionalUser.isEmpty()){
-            responseWrapper.setErrorMessage("대상이 없습니다.");
+        User userResult = resultSupporter.getUserResult(responseWrapper, username);
+        if (userResult == null){
             return responseWrapper;
         }
 
-        User user = optionalUser.get();
+        boolean isDeletedTemp = userRepository.deleteUserByUser(userResult);
 
-        boolean isDeleted = userRepository.deleteUserByUser(user);
-        Map<String, Boolean> result = new HashMap<>();
-        result.put("isDeleted", isDeleted);
-
-        responseWrapper.setObject(result);
+        responseWrapper.setObject(new Object(){
+            public Boolean isDeleted = isDeletedTemp;
+        });
         return responseWrapper;
     }
 

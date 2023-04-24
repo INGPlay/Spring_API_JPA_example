@@ -11,5 +11,5 @@ import lombok.Setter;
 @Getter @Setter
 public class ContainerDTO {
     private User user;
-    private String title;
+    private String containerTitle;
 }

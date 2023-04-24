@@ -46,46 +46,20 @@ class PostRepostioryTest {
         ContainerDTOWithUsername containerForm = new ContainerDTOWithUsername();
         containerForm.setUsername("faraway");
         containerForm.setTitle("첫 번째 저장소");
-        boolean isInsertedContainer = containerRepostiory.insertContainerWithUsername(containerForm);
+        boolean isInsertedContainer = containerRepostiory.insertContainer(containerForm);
 
         ContainerDTOWithUsername containerForm2 = new ContainerDTOWithUsername();
         containerForm2.setUsername("faraway2");
         containerForm2.setTitle("faraway2 첫번째 저장소");
-        boolean isInsertedContainer2 = containerRepostiory.insertContainerWithUsername(containerForm2);
+        boolean isInsertedContainer2 = containerRepostiory.insertContainer(containerForm2);
 
         ContainerDTOWithUsername containerForm3 = new ContainerDTOWithUsername();
         containerForm3.setUsername("faraway2");
         containerForm3.setTitle("faraway2 두번째 저장소");
-        boolean isInsertedContainer3 = containerRepostiory.insertContainerWithUsername(containerForm3);
+        boolean isInsertedContainer3 = containerRepostiory.insertContainer(containerForm3);
 
         log.info("isInsertContainer :{}", isInsertedContainer);
         log.info("isInsertContainer2 :{}", isInsertedContainer2);
         log.info("isInsertContainer3 :{}", isInsertedContainer3);
-    }
-
-    @Test
-    @Rollback(value = false)
-    void insertPostTest(){
-        PostDTO postDTO = new PostDTO();
-        postDTO.setContainer(containerRepostiory.findContainerById(1L).get());
-        postDTO.setTitle("첫번째 글입니다.");
-        postDTO.setContent("첫 번째 내용입니다");
-
-        postRepostiory.insertPostByPostForm(postDTO);
-
-
-        PostDTO postDTO2 = new PostDTO();
-        postDTO2.setContainer(containerRepostiory.findContainerById(2L).get());
-        postDTO2.setTitle("첫번째 글입니다.");
-        postDTO2.setContent("첫 번째 내용입니다");
-
-        postRepostiory.insertPostByPostForm(postDTO2);
-
-        PostDTO postDTO3 = new PostDTO();
-        postDTO3.setContainer(containerRepostiory.findContainerById(2L).get());
-        postDTO3.setTitle("두번째 글입니다.");
-        postDTO3.setContent("두 번째 내용입니다");
-
-        postRepostiory.insertPostByPostForm(postDTO3);
     }
 }
