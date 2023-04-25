@@ -1,6 +1,5 @@
 package api.jpa.practice.repository;
 
-import api.jpa.practice.domain.form.NewUserForm;
 import api.jpa.practice.domain.request.RegisterDTO;
 import api.jpa.practice.entity.User;
 import api.jpa.practice.entity.embeddables.TimeInform;

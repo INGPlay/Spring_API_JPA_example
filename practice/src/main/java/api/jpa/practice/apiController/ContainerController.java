@@ -1,12 +1,10 @@
 package api.jpa.practice.apiController;
 
+import api.jpa.practice.domain.request.ContainerPathDTO;
 import api.jpa.practice.domain.form.ContainerForm;
-import api.jpa.practice.domain.form.SubmitContainerForm;
 import api.jpa.practice.domain.request.UpdateContainerDTO;
 import api.jpa.practice.domain.response.ResponseWrapper;
-import api.jpa.practice.entity.Container;
 import api.jpa.practice.service.ContainerService;
-import api.jpa.practice.service.UserService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.web.bind.annotation.*;
@@ -25,50 +23,55 @@ public class ContainerController {
     // containerTitle이 userId가 같다면 겹치지 않도록 설정
     @PostMapping("/user/{username}/container")
     public ResponseWrapper createContainer(@PathVariable(name = "username") String username,
-                                           @RequestBody SubmitContainerForm submitContainerForm){
+                                           @RequestBody ContainerForm containerForm){
 
-        ContainerForm containerForm = new ContainerForm();
-        containerForm.setUsername(username);
-        containerForm.setContainerTitle(submitContainerForm.getContainerTitle());
+        ContainerPathDTO containerPathDTO = new ContainerPathDTO();
+        containerPathDTO.setUsername(username);
+        containerPathDTO.setContainerTitle(containerForm.getContainerTitle());
 
-        return containerService.createContainer(containerForm);
+        return containerService.createContainer(containerPathDTO);
     }
 
     @GetMapping("/user/{username}/container-list/{containerTitle}")
     public ResponseWrapper searchContainers(@PathVariable(name = "username") String username,
                                             @PathVariable(name = "containerTitle") String containerTitle){
-        ContainerForm containerForm = new ContainerForm();
-        containerForm.setUsername(username);
-        containerForm.setContainerTitle(containerTitle);
+        ContainerPathDTO containerPathDTO = new ContainerPathDTO();
+        containerPathDTO.setUsername(username);
+        containerPathDTO.setContainerTitle(containerTitle);
 
-        return containerService.searchContainers(containerForm);
+        return containerService.searchContainers(containerPathDTO);
     }
 
     @GetMapping("/user/{username}/container/{containerTitle}")
     public ResponseWrapper findContainer(@PathVariable(name = "username") String username,
                                             @PathVariable(name = "containerTitle") String containerTitle){
-        ContainerForm containerForm = new ContainerForm();
-        containerForm.setUsername(username);
-        containerForm.setContainerTitle(containerTitle);
+        ContainerPathDTO containerPathDTO = new ContainerPathDTO();
+        containerPathDTO.setUsername(username);
+        containerPathDTO.setContainerTitle(containerTitle);
 
-        return containerService.findContainer(containerForm);
+        return containerService.findContainer(containerPathDTO);
     }
 
-    @DeleteMapping("/user/{username}/container/{containerId}")
-    public ResponseWrapper deleteContainer(@PathVariable Long containerId){
+    @DeleteMapping("/user/{username}/container/{containerTitle}")
+    public ResponseWrapper deleteContainer(@PathVariable(name = "username") String username,
+                                           @PathVariable(name = "containerTitle") String containerTitle){
 
-        return containerService.deleteContainerByContainerId(containerId);
+        ContainerPathDTO containerPathDTO = new ContainerPathDTO();
+        containerPathDTO.setUsername(username);
+        containerPathDTO.setContainerTitle(containerTitle);
+
+        return containerService.deleteContainer(containerPathDTO);
     }
 
-    @PutMapping("/user/{username}/container/{containerId}")
+    @PutMapping("/user/{username}/container/{containerTitle}")
     public ResponseWrapper updateContainer(@PathVariable(name = "username") String username,
-                                           @PathVariable(name = "containerId") Long containerId,
-                                           @RequestBody SubmitContainerForm submitContainerForm){
+                                           @PathVariable(name = "containerTitle") String containerTitle,
+                                           @RequestBody ContainerForm containerForm){
 
         UpdateContainerDTO updateContainerDTO = new UpdateContainerDTO();
         updateContainerDTO.setUsername(username);
-        updateContainerDTO.setTargetContainerId(containerId);
-        updateContainerDTO.setSubmitContainerForm(submitContainerForm);
+        updateContainerDTO.setContainerTitle(containerTitle);
+        updateContainerDTO.setContainerForm(containerForm);
 
         return containerService.updateContainer(updateContainerDTO);
     }

@@ -1,7 +1,7 @@
 package api.jpa.practice.repository;
 
+import api.jpa.practice.domain.form.ContainerForm;
 import api.jpa.practice.domain.request.ContainerDTO;
-import api.jpa.practice.domain.request.ContainerDTOWithUserId;
 import api.jpa.practice.entity.Container;
 import api.jpa.practice.entity.User;
 import api.jpa.practice.entity.embeddables.TimeInform;
@@ -20,63 +20,12 @@ import java.util.Optional;
 @RequiredArgsConstructor
 public class ContainerRepostiory {
     private final EntityManager em;
-    private final UserRepository userRepository;
 
-    public boolean insertContainerByContainerForm(ContainerDTO containerDTO){
-        try {
-            // user 준비
-            User user = containerDTO.getUser();
-
-            // title 준비
-            String title = containerDTO.getContainerTitle();
-
-            // timeInform 준비
-            TimeInform timeInform = new TimeInform(new Date(), new Date());
-
-            // -> Container 생성
-            Container container = new Container(user, timeInform, title);
-
-            em.persist(container);
-
-        } catch (Exception e){
-            e.printStackTrace();
-            return false;
-        }
-
-        return true;
-    }
-    public boolean insertContainerWithUserId(ContainerDTOWithUserId containerDTOWithUserId){
+    public boolean insertContainer(ContainerDTO containerPathDTO){
 
         try {
-            Long userId = containerDTOWithUserId.getUserId();
-            
-            // title 준비
-            String title = containerDTOWithUserId.getTitle();
-
-            // user 준비
-            User user = em.find(User.class, userId);
-
-            // timeInform 준비
-            TimeInform timeInform = new TimeInform(new Date(), new Date());
-
-            // -> Container 생성
-            Container container = new Container(user, timeInform, title);
-            
-            em.persist(container);
-            
-        } catch (Exception e){
-            e.printStackTrace();
-            return false;
-        }
-
-        return true;
-    }
-
-    public boolean insertContainer(ContainerDTO containerDTO){
-
-        try {
-            User user = containerDTO.getUser();
-            String title = containerDTO.getContainerTitle();
+            User user = containerPathDTO.getUser();
+            String title = containerPathDTO.getContainerTitle();
 
             // timeInform 준비
             TimeInform timeInform = new TimeInform(new Date(), new Date());
@@ -98,16 +47,6 @@ public class ContainerRepostiory {
         return Optional.ofNullable(
                 em.find(Container.class, containerId)
         );
-    }
-
-    public Optional<Container> findContainer(ContainerDTO containerDTO) {
-        return em.createQuery(
-                    "select c from Container c" +
-                            " where c.user = :user and c.title = :containerTitle", Container.class)
-                .setParameter("user", containerDTO.getUser())
-                .setParameter("containerTitle", containerDTO.getContainerTitle())
-                .getResultStream()
-                .findAny();
     }
 
     public boolean deleteContainer(Container container){
@@ -138,12 +77,12 @@ public class ContainerRepostiory {
         }
     }
 
-    public Optional<Container> findContainer(User user, String title){
+    public Optional<Container> findContainer(ContainerDTO containerDTO){
         return em.createQuery(
                 "select c from Container c" +
-                        " where c.user = :user and c.title = :title", Container.class)
-                .setParameter("user", user)
-                .setParameter("title", title)
+                        " where c.user = :user and c.title = :containerTitle", Container.class)
+                .setParameter("user", containerDTO.getUser())
+                .setParameter("containerTitle", containerDTO.getContainerTitle())
                 .getResultStream().findAny();
     }
 
@@ -161,5 +100,17 @@ public class ContainerRepostiory {
             e.printStackTrace();
             return new ArrayList<>();
         }
+    }
+
+    public boolean updateContainer(Container container, ContainerForm containerForm){
+        try {
+            container.setTitle(containerForm.getContainerTitle());
+            em.persist(container);
+
+        } catch (Exception e){
+            e.printStackTrace();
+            return false;
+        }
+        return  true;
     }
 }

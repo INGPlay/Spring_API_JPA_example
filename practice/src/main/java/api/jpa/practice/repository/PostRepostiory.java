@@ -1,13 +1,14 @@
 package api.jpa.practice.repository;
 
-import api.jpa.practice.domain.form.ContainerForm;
-import api.jpa.practice.domain.request.ContainerDTO;
+import api.jpa.practice.domain.form.PostForm;
+import api.jpa.practice.domain.request.ContainerPathDTO;
 import api.jpa.practice.domain.request.PostDTO;
 import api.jpa.practice.entity.Container;
 import api.jpa.practice.entity.Post;
 import api.jpa.practice.entity.embeddables.TimeInform;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Repository;
+import org.springframework.transaction.annotation.Transactional;
 
 import javax.persistence.EntityManager;
 import java.util.Date;
@@ -44,12 +45,12 @@ public class PostRepostiory {
         return true;
     }
 
-    public List<Post> findPostsByContainerForm(ContainerForm containerForm){
+    public List<Post> findPostsByContainerForm(ContainerPathDTO containerPathDTO){
         return em.createQuery(
                 "select p from Post p" +
                         " where p.container.user.username = :username and p.container.title = :containerTitle", Post.class)
-                .setParameter("username", containerForm.getUsername())
-                .setParameter("containerTitle", containerForm.getContainerTitle())
+                .setParameter("username", containerPathDTO.getUsername())
+                .setParameter("containerTitle", containerPathDTO.getContainerTitle())
                 .getResultList();
     }
 
@@ -78,5 +79,31 @@ public class PostRepostiory {
                         " where c.containerId = :containerId", Post.class)
                 .setParameter("containerId", containerId)
                 .getResultList();
+    }
+
+    public boolean deletePost(Post post){
+        try {
+            em.remove(post);
+        } catch (Exception e){
+            e.printStackTrace();
+            return false;
+        }
+
+        return true;
+    }
+
+    @Transactional
+    public boolean updatePost(Post post, PostForm postForm){
+        try {
+            post.setTitle(postForm.getPostTitle());
+            post.setContent(postForm.getPostContent());
+            em.persist(post);
+
+        } catch (Exception e){
+            e.printStackTrace();
+            return false;
+        }
+
+        return true;
     }
 }

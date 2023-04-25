@@ -5,6 +5,5 @@ import lombok.Setter;
 
 @Getter @Setter
 public class ContainerForm {
-    private String username;
     private String containerTitle;
 }

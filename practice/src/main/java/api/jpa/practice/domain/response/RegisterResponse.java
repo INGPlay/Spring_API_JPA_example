@@ -1,6 +1,5 @@
 package api.jpa.practice.domain.response;
 
-import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.Setter;
 

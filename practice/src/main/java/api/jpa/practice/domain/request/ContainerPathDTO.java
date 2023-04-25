@@ -4,7 +4,7 @@ import lombok.Getter;
 import lombok.Setter;
 
 @Getter @Setter
-public class ContainerTitlesDTO {
+public class ContainerPathDTO {
     private String username;
     private String containerTitle;
 }

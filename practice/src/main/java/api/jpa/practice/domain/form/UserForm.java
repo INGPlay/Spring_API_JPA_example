@@ -4,7 +4,7 @@ import lombok.Getter;
 import lombok.Setter;
 
 @Getter @Setter
-public class NewUserForm {
-    private String newUsername;
-    private String newPassword;
+public class UserForm {
+    private String username;
+    private String password;
 }

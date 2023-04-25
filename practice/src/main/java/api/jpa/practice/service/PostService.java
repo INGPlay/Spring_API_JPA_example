@@ -1,6 +1,6 @@
 package api.jpa.practice.service;
 
-import api.jpa.practice.domain.form.ContainerForm;
+import api.jpa.practice.domain.request.ContainerPathDTO;
 import api.jpa.practice.domain.form.PostForm;
 import api.jpa.practice.domain.request.*;
 import api.jpa.practice.domain.response.ResponseWrapper;
@@ -15,9 +15,7 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
 import java.util.Optional;
 
 @Service
@@ -28,11 +26,11 @@ public class PostService {
     private final ContainerRepostiory containerRepostiory;
     private final ResultSupporter resultSupporter;
 
-    public ResponseWrapper findPosts(ContainerForm containerForm){
+    public ResponseWrapper findPosts(ContainerPathDTO containerPathDTO){
 
         ResponseWrapper responseWrapper = new ResponseWrapper();
 
-        User userResult = resultSupporter.getUserResult(responseWrapper, containerForm.getUsername());
+        User userResult = resultSupporter.getUserResult(responseWrapper, containerPathDTO.getUsername());
         if (userResult == null){
             return responseWrapper;
         }
@@ -44,7 +42,7 @@ public class PostService {
             return responseWrapper;
         }
 
-        List<Post> posts = postRepostiory.findPostsByContainerForm(containerForm);
+        List<Post> posts = postRepostiory.findPostsByContainerForm(containerPathDTO);
 
         if (posts.size() <= 0){
             responseWrapper.setErrorMessage("컨테이너가 포스트를 가지고 있지 않습니다.");
@@ -117,34 +115,24 @@ public class PostService {
         String containerTitle = createPostDTO.getContainerTitle();
         PostForm postForm = createPostDTO.getPostForm();
 
-        Optional<User> optionalUser = userRepository.findUserByUsername(username);
-
-        if (optionalUser.isEmpty()){
-            responseWrapper.setErrorMessage("유저가 존재하지 않습니다.");
+        User userResult = resultSupporter.getUserResult(responseWrapper, username);
+        if(userResult == null){
             return responseWrapper;
         }
 
-        ContainerDTO containerDTO = new ContainerDTO();
-        containerDTO.setUser(optionalUser.get());
-        containerDTO.setContainerTitle(containerTitle);
-        Optional<Container> optionalContainer = containerRepostiory.findContainer(containerDTO);
-
-        if (optionalContainer.isEmpty()){
-            responseWrapper.setErrorMessage("컨테이너가 없습니다.");
+        Container containerResult = resultSupporter.getContainerResult(responseWrapper, userResult, containerTitle);
+        if(containerResult == null){
             return responseWrapper;
         }
 
-        Container container = optionalContainer.get();
-
-        Optional<Post> optionalPost = postRepostiory.findPost(container, postForm.getPostTitle());
-
+        Optional<Post> optionalPost = postRepostiory.findPost(containerResult, postForm.getPostTitle());
         if (optionalPost.isPresent()){
             responseWrapper.setErrorMessage("같은 제목의 포스트가 이미 존재합니다.");
             return responseWrapper;
         }
 
         PostDTO postDTO = new PostDTO();
-        postDTO.setContainer(container);
+        postDTO.setContainer(containerResult);
         postDTO.setPostForm(postForm);
         boolean isInsertedTemp = postRepostiory.insertPostByPostForm(postDTO);
 
@@ -160,5 +148,67 @@ public class PostService {
 
     }
 
+    public ResponseWrapper deletePost(PostPathDTO postPathDTO){
+        ResponseWrapper responseWrapper = new ResponseWrapper();
 
+        String username = postPathDTO.getUsername();
+        String containerTitle = postPathDTO.getConatainerTitle();
+        String postTitle = postPathDTO.getPostTitle();
+
+        User userResult = resultSupporter.getUserResult(responseWrapper, username);
+        if(userResult == null){
+            return responseWrapper;
+        }
+
+        Container containerResult = resultSupporter.getContainerResult(responseWrapper, userResult, containerTitle);
+        if(containerResult == null){
+            return responseWrapper;
+        }
+
+        Optional<Post> optionalPost = postRepostiory.findPost(containerResult, postTitle);
+        if (optionalPost.isEmpty()){
+            responseWrapper.setErrorMessage("포스트 삭제가 실패하였습니다.");
+            return responseWrapper;
+        }
+
+        boolean isDeletedTemp = postRepostiory.deletePost(optionalPost.get());
+
+        responseWrapper.setObject(new Object(){
+            public final boolean isDeleted = isDeletedTemp;
+        });
+
+        return responseWrapper;
+    }
+
+
+    public ResponseWrapper updatePost(UpdatePostDTO updatePostDTO) {
+        ResponseWrapper responseWrapper = new ResponseWrapper();
+
+        String username = updatePostDTO.getUsername();
+        String containerTitle = updatePostDTO.getContainerTitle();
+        String postTitle = updatePostDTO.getPostTitle();
+        PostForm postForm = updatePostDTO.getPostForm();
+
+        User userResult = resultSupporter.getUserResult(responseWrapper, username);
+        if(userResult == null){
+            return responseWrapper;
+        }
+
+        Container containerResult = resultSupporter.getContainerResult(responseWrapper, userResult, containerTitle);
+        if(containerResult == null){
+            return responseWrapper;
+        }
+
+        Post postResult = resultSupporter.getPostResult(responseWrapper, containerResult, postTitle);
+        if(postResult == null){
+            return responseWrapper;
+        }
+
+        boolean isUpdatedTemp = postRepostiory.updatePost(postResult, postForm);
+
+        responseWrapper.setObject(new Object(){
+            public final boolean isUpdated = isUpdatedTemp;
+        });
+        return responseWrapper;
+    }
 }

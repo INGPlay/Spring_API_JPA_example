@@ -1,6 +1,6 @@
 package api.jpa.practice.service;
 
-import api.jpa.practice.domain.form.RegisterForm;
+import api.jpa.practice.domain.form.UserForm;
 import api.jpa.practice.domain.request.RegisterDTO;
 import api.jpa.practice.domain.response.RegisterResponse;
 import api.jpa.practice.domain.response.ResponseWrapper;
@@ -20,12 +20,12 @@ public class UserService {
     private final ResultSupporter resultSupporter;
 
     @Transactional
-    public ResponseWrapper insertUserByRegisterForm(RegisterForm registerForm){
+    public ResponseWrapper insertUserByRegisterForm(UserForm userForm){
 
         ResponseWrapper responseWrapper = new ResponseWrapper();
         RegisterResponse registerResponse = new RegisterResponse();
         // 중복 검사
-        if (isDuplicatedUsername(registerForm.getUsername())){
+        if (isDuplicatedUsername(userForm.getUsername())){
             registerResponse.setRegister(false);
             registerResponse.setDuplicate(true);
 
@@ -36,8 +36,8 @@ public class UserService {
         }
 
         RegisterDTO registerDTO = new RegisterDTO();
-        registerDTO.setUsername(registerForm.getUsername());
-        registerDTO.setPassword(registerForm.getPassword());
+        registerDTO.setUsername(userForm.getUsername());
+        registerDTO.setPassword(userForm.getPassword());
         registerDTO.setUserRole(UserRole.NORMAL);
 
         boolean isRegistred = userRepository.insertUserByRegisterDTO(registerDTO);
