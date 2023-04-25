@@ -86,7 +86,8 @@ public class ContainerService {
             return responseWrapper;
         }
 
-        Container containerResult = resultSupporter.getContainerResult(responseWrapper, userResult, containerTitle);
+        ContainerDTO containerDTO = new ContainerDTO(userResult, containerTitle);
+        Container containerResult = resultSupporter.getContainerResult(responseWrapper, containerDTO);
         if (containerResult == null){
             return responseWrapper;
         }
@@ -121,7 +122,8 @@ public class ContainerService {
             return responseWrapper;
         }
 
-        Container containerResult = resultSupporter.getContainerResult(responseWrapper, userResult, containerTitle);
+        ContainerDTO containerDTO = new ContainerDTO(userResult, containerTitle);
+        Container containerResult = resultSupporter.getContainerResult(responseWrapper, containerDTO);
         if (containerResult == null){
             return responseWrapper;
         }
@@ -168,7 +170,8 @@ public class ContainerService {
             return responseWrapper;
         }
 
-        Container containerResult = resultSupporter.getContainerResult(responseWrapper, userResult, containerTitle);
+        ContainerDTO containerDTO = new ContainerDTO(userResult, containerTitle);
+        Container containerResult = resultSupporter.getContainerResult(responseWrapper, containerDTO);
         if (containerResult == null){
             return responseWrapper;
         }

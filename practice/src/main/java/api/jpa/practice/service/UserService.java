@@ -20,7 +20,7 @@ public class UserService {
     private final ResultSupporter resultSupporter;
 
     @Transactional
-    public ResponseWrapper insertUserByRegisterForm(UserForm userForm){
+    public ResponseWrapper insertUser(UserForm userForm){
 
         ResponseWrapper responseWrapper = new ResponseWrapper();
         RegisterResponse registerResponse = new RegisterResponse();

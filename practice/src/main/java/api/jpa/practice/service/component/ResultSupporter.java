@@ -1,5 +1,6 @@
 package api.jpa.practice.service.component;
 
+import api.jpa.practice.domain.request.ContainerDTO;
 import api.jpa.practice.domain.response.ResponseWrapper;
 import api.jpa.practice.entity.Container;
 import api.jpa.practice.entity.Post;
@@ -31,9 +32,9 @@ public class ResultSupporter {
         return optionalUser.get();
     }
 
-    public Container getContainerResult(ResponseWrapper responseWrapper, User user, String containerTitle){
+    public Container getContainerResult(ResponseWrapper responseWrapper, ContainerDTO containerDTO){
 
-        Optional<Container> optionalContainer = containerRepostiory.findContainer(user, containerTitle);
+        Optional<Container> optionalContainer = containerRepostiory.findContainer(containerDTO);
         if (optionalContainer.isEmpty()){
             responseWrapper.setErrorMessage("컨테이너가 존재하지 않습니다.");
             return null;

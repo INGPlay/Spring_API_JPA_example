@@ -105,6 +105,7 @@ public class ContainerRepostiory {
     public boolean updateContainer(Container container, ContainerForm containerForm){
         try {
             container.setTitle(containerForm.getContainerTitle());
+            container.getTimeInform().renewUpdatedTiem();
             em.persist(container);
 
         } catch (Exception e){

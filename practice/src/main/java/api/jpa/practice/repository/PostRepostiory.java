@@ -97,6 +97,7 @@ public class PostRepostiory {
         try {
             post.setTitle(postForm.getPostTitle());
             post.setContent(postForm.getPostContent());
+            post.getTimeInform().renewUpdatedTiem();
             em.persist(post);
 
         } catch (Exception e){

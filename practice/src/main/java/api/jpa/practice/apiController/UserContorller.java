@@ -13,7 +13,7 @@ public class UserContorller {
 
     @PostMapping("/user")
     public ResponseWrapper register(@RequestBody UserForm userForm){
-        return userService.insertUserByRegisterForm(userForm);
+        return userService.insertUser(userForm);
     }
 
     @GetMapping("/user/{username}")

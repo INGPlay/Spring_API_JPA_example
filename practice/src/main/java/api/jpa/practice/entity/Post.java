@@ -22,6 +22,10 @@ public class Post {
     @JoinColumn(name = "container_id")
     private Container container;
 
+    @JsonIgnore
+    @OneToOne(mappedBy = "post", fetch = FetchType.LAZY)
+    private ShortCut shortCut;
+
     @Embedded
     private TimeInform timeInform;
 

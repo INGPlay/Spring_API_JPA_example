@@ -33,15 +33,22 @@ public class User {
     @OneToMany(mappedBy = "user", cascade = CascadeType.ALL)
     private List<Container> containers = new ArrayList<>();
 
+    @OneToMany(mappedBy = "user", cascade = CascadeType.ALL)
+    private List<ShortCut> shortCut = new ArrayList<>();
+
     public User(String username, String password, UserRole userRole, TimeInform timeInform) {
         this.username = username;
         this.password = password;
         this.userRole = userRole;
         this.timeInform = timeInform;
     }
-
     public void addContainer(Container container){
         container.setUser(this);
         this.containers.add(container);
+    }
+
+    public void addShortCut(ShortCut shortCut){
+        shortCut.setUser(this);
+        this.shortCut.add(shortCut);
     }
 }

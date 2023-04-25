@@ -1,6 +1,7 @@
 package api.jpa.practice.repository;
 
 import api.jpa.practice.domain.request.RegisterDTO;
+import api.jpa.practice.entity.ShortCut;
 import api.jpa.practice.entity.User;
 import api.jpa.practice.entity.embeddables.TimeInform;
 import api.jpa.practice.entity.enums.UserRole;
