@@ -24,7 +24,7 @@
 
 > ## Database
 - H2 DB
-- MySQL
+- Maria DB
 
 > ## FrontEnd
 - Swagger UI

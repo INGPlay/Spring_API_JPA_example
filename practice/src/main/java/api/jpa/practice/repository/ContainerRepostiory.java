@@ -2,6 +2,7 @@ package api.jpa.practice.repository;
 
 import api.jpa.practice.domain.form.ContainerForm;
 import api.jpa.practice.domain.request.ContainerDTO;
+import api.jpa.practice.domain.request.PagingDTO;
 import api.jpa.practice.entity.Container;
 import api.jpa.practice.entity.User;
 import api.jpa.practice.entity.embeddables.TimeInform;
@@ -77,6 +78,26 @@ public class ContainerRepostiory {
         }
     }
 
+    public List<Container> findContainersByUser(User user, PagingDTO pagingDTO){
+
+        try {
+            List<Container> containers = em.createQuery(
+                            "select c from Container c" +
+                                    " where c.user = :user", Container.class)
+                    .setParameter("user", user)
+                    .setFirstResult(pagingDTO.getStartPos())
+                    .setMaxResults(pagingDTO.getLength())
+                    .getResultList();
+
+            return containers;
+
+        } catch (Exception e){
+            e.printStackTrace();
+            return new ArrayList<>();
+        }
+    }
+
+
     public Optional<Container> findContainer(ContainerDTO containerDTO){
         return em.createQuery(
                 "select c from Container c" +
@@ -93,6 +114,24 @@ public class ContainerRepostiory {
                             " where c.user = :user and c.title like concat('%', :title, '%')", Container.class)
                     .setParameter("user", user)
                     .setParameter("title", title)
+                    .getResultList();
+
+            return containers;
+        } catch (Exception e){
+            e.printStackTrace();
+            return new ArrayList<>();
+        }
+    }
+
+    public List<Container> searchContainers(User user, String title, PagingDTO pagingDTO){
+        try{
+            List<Container> containers = em.createQuery(
+                            "select c from Container c" +
+                                    " where c.user = :user and c.title like concat('%', :title, '%')", Container.class)
+                    .setParameter("user", user)
+                    .setParameter("title", title)
+                    .setFirstResult(pagingDTO.getStartPos())
+                    .setMaxResults(pagingDTO.getLength())
                     .getResultList();
 
             return containers;

@@ -53,6 +53,33 @@ public class PostService {
         return responseWrapper;
     }
 
+    public ResponseWrapper findPosts(ContainerPathDTO containerPathDTO, PagingDTO pagingDTO){
+
+        ResponseWrapper responseWrapper = new ResponseWrapper();
+
+        User userResult = resultSupporter.getUserResult(responseWrapper, containerPathDTO.getUsername());
+        if (userResult == null){
+            return responseWrapper;
+        }
+
+        List<Container> containers = containerRepostiory.findContainersByUser(userResult);
+
+        if (containers.size() <= 0){
+            responseWrapper.setErrorMessage("대상 유저가 컨테이너를 가지고 있지 않습니다.");
+            return responseWrapper;
+        }
+
+        List<Post> posts = postRepostiory.findPostsByContainerForm(containerPathDTO, pagingDTO);
+
+        if (posts.size() <= 0){
+            responseWrapper.setErrorMessage("컨테이너가 포스트를 가지고 있지 않습니다.");
+            return responseWrapper;
+        }
+
+        responseWrapper.setObject(posts);
+        return responseWrapper;
+    }
+
     @Transactional
     public ResponseWrapper findPost(PostPathDTO postPathDTO){
         ResponseWrapper responseWrapper = new ResponseWrapper();
@@ -100,14 +127,35 @@ public class PostService {
         }
 
         List<Post> posts = postRepostiory.searchPosts(containerResult, postTitle);
-        if (posts.size() <= 0){
-            responseWrapper.setErrorMessage("검색된 포스트가 없습니다.");
-            return responseWrapper;
-        }
 
         responseWrapper.setObject(posts);
         return responseWrapper;
     }
+
+    @Transactional
+    public ResponseWrapper searchPosts(PostPathDTO postPathDTO, PagingDTO pagingDTO){
+        ResponseWrapper responseWrapper = new ResponseWrapper();
+
+        String username = postPathDTO.getUsername();
+        String containerTitle = postPathDTO.getConatainerTitle();
+        String postTitle = postPathDTO.getPostTitle();
+        User userResult = resultSupporter.getUserResult(responseWrapper, username);
+        if(userResult == null){
+            return responseWrapper;
+        }
+
+        ContainerDTO containerDTO = new ContainerDTO(userResult, containerTitle);
+        Container containerResult = resultSupporter.getContainerResult(responseWrapper, containerDTO);
+        if(containerResult == null){
+            return responseWrapper;
+        }
+
+        List<Post> posts = postRepostiory.searchPosts(containerResult, postTitle, pagingDTO);
+
+        responseWrapper.setObject(posts);
+        return responseWrapper;
+    }
+
 
     @Transactional
     public ResponseWrapper createPost(CreatePostDTO createPostDTO){

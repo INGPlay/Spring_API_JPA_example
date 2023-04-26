@@ -1,5 +1,6 @@
 package api.jpa.practice.repository;
 
+import api.jpa.practice.domain.request.PagingDTO;
 import api.jpa.practice.domain.request.ShortCutDTO;
 import api.jpa.practice.entity.Post;
 import api.jpa.practice.entity.ShortCut;
@@ -35,8 +36,20 @@ public class ShortCutRepository {
     public List<ShortCut> findShortCuts(String username){
         return em.createQuery(
                 "select s from ShortCut s" +
+                        " join fetch s.post p" +
                         " where s.user.username = :username", ShortCut.class)
                 .setParameter("username", username)
+                .getResultList();
+    }
+
+    public List<ShortCut> findShortCuts(String username, PagingDTO pagingDTO){
+        return em.createQuery(
+                        "select s from ShortCut s" +
+                                " join fetch s.post p" +
+                                " where s.user.username = :username", ShortCut.class)
+                .setParameter("username", username)
+                .setFirstResult(pagingDTO.getStartPos())
+                .setMaxResults(pagingDTO.getLength())
                 .getResultList();
     }
     public Optional<ShortCut> findShortCutByPost(Post post){

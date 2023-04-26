@@ -2,6 +2,7 @@ package api.jpa.practice.apiController;
 
 import api.jpa.practice.domain.request.ContainerPathDTO;
 import api.jpa.practice.domain.form.ContainerForm;
+import api.jpa.practice.domain.request.PagingDTO;
 import api.jpa.practice.domain.request.UpdateContainerDTO;
 import api.jpa.practice.domain.response.ResponseWrapper;
 import api.jpa.practice.service.ContainerService;
@@ -20,6 +21,13 @@ public class ContainerController {
         return containerService.findContainersByUsername(username);
     }
 
+    @GetMapping("/user/{username}/container-list/{startPos}/{length}")
+    public ResponseWrapper getContainersPaging(@PathVariable(name = "username") String username,
+                                               @PathVariable(name = "startPos") int startPos,
+                                               @PathVariable(name = "length") int length){
+        return containerService.findContainersByUsername(username, new PagingDTO(startPos, length));
+    }
+
     // containerTitle이 userId가 같다면 겹치지 않도록 설정
     @PostMapping("/user/{username}/container")
     public ResponseWrapper createContainer(@PathVariable(name = "username") String username,
@@ -32,6 +40,7 @@ public class ContainerController {
         return containerService.createContainer(containerPathDTO);
     }
 
+    // 검색
     @GetMapping("/user/{username}/container-list/{containerTitle}")
     public ResponseWrapper searchContainers(@PathVariable(name = "username") String username,
                                             @PathVariable(name = "containerTitle") String containerTitle){
@@ -40,6 +49,18 @@ public class ContainerController {
         containerPathDTO.setContainerTitle(containerTitle);
 
         return containerService.searchContainers(containerPathDTO);
+    }
+
+    @GetMapping("/user/{username}/container-list/{containerTitle}/{startPos}/{length}")
+    public ResponseWrapper searchContainersPaging(@PathVariable(name = "username") String username,
+                                                  @PathVariable(name = "containerTitle") String containerTitle,
+                                                  @PathVariable(name = "startPos") int startPos,
+                                                  @PathVariable(name = "length") int length){
+        ContainerPathDTO containerPathDTO = new ContainerPathDTO();
+        containerPathDTO.setUsername(username);
+        containerPathDTO.setContainerTitle(containerTitle);
+
+        return containerService.searchContainers(containerPathDTO, new PagingDTO(startPos, length));
     }
 
     @GetMapping("/user/{username}/container/{containerTitle}")

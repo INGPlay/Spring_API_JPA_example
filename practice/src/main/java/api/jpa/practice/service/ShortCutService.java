@@ -1,6 +1,7 @@
 package api.jpa.practice.service;
 
 import api.jpa.practice.domain.request.ContainerDTO;
+import api.jpa.practice.domain.request.PagingDTO;
 import api.jpa.practice.domain.request.PostPathDTO;
 import api.jpa.practice.domain.request.ShortCutDTO;
 import api.jpa.practice.domain.response.ResponseWrapper;
@@ -96,6 +97,16 @@ public class ShortCutService {
         ResponseWrapper responseWrapper = new ResponseWrapper();
 
         List<ShortCut> shortCuts = shortCutRepository.findShortCuts(username);
+        responseWrapper.setObject(shortCuts);
+
+        return responseWrapper;
+    }
+
+    @Transactional
+    public ResponseWrapper findShortCutsByUsername(String username, PagingDTO pagingDTO){
+        ResponseWrapper responseWrapper = new ResponseWrapper();
+
+        List<ShortCut> shortCuts = shortCutRepository.findShortCuts(username, pagingDTO);
         responseWrapper.setObject(shortCuts);
 
         return responseWrapper;

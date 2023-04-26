@@ -94,6 +94,6 @@ public class initializer {
         postPathDTO.setUsername(username1);
         postPathDTO.setConatainerTitle(containerTitle1);
         postPathDTO.setPostTitle(postTitle1);
-//        shortCutService.linkShortCut(postPathDTO);
+        shortCutService.linkShortCut(postPathDTO);
     }
 }

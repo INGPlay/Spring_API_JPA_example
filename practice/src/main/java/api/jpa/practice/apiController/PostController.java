@@ -1,10 +1,7 @@
 package api.jpa.practice.apiController;
 
-import api.jpa.practice.domain.request.ContainerPathDTO;
+import api.jpa.practice.domain.request.*;
 import api.jpa.practice.domain.form.PostForm;
-import api.jpa.practice.domain.request.CreatePostDTO;
-import api.jpa.practice.domain.request.PostPathDTO;
-import api.jpa.practice.domain.request.UpdatePostDTO;
 import api.jpa.practice.domain.response.ResponseWrapper;
 import api.jpa.practice.service.PostService;
 import lombok.RequiredArgsConstructor;
@@ -24,6 +21,19 @@ public class PostController {
         containerPathDTO.setContainerTitle(containerTitle);
 
         return postService.findPosts(containerPathDTO);
+    }
+
+    @GetMapping("/user/{username}/container/{containerTitle}/post-list/{startPos}/{length}")
+    public ResponseWrapper getPostsPaging(@PathVariable(name = "username") String username,
+                                          @PathVariable(name = "containerTitle") String containerTitle,
+                                          @PathVariable(name = "startPos") int startPos,
+                                          @PathVariable(name = "length") int length){
+
+        ContainerPathDTO containerPathDTO = new ContainerPathDTO();
+        containerPathDTO.setUsername(username);
+        containerPathDTO.setContainerTitle(containerTitle);
+
+        return postService.findPosts(containerPathDTO, new PagingDTO(startPos, length));
     }
 
     @PostMapping("/user/{username}/container/{containerTitle}/post")
@@ -60,6 +70,20 @@ public class PostController {
         postPathDTO.setPostTitle(postTitle);
 
         return postService.searchPosts(postPathDTO);
+    }
+
+    @GetMapping("/user/{username}/container/{containerTitle}/post-list/{postTitle}/{startPos}/{length}")
+    public ResponseWrapper searchPostsPaging(@PathVariable(name = "username") String username,
+                                             @PathVariable(name = "containerTitle") String containerTitle,
+                                             @PathVariable(name = "postTitle") String postTitle,
+                                             @PathVariable(name = "startPos") int startPos,
+                                             @PathVariable(name = "length") int length){
+        PostPathDTO postPathDTO = new PostPathDTO();
+        postPathDTO.setUsername(username);
+        postPathDTO.setConatainerTitle(containerTitle);
+        postPathDTO.setPostTitle(postTitle);
+
+        return postService.searchPosts(postPathDTO, new PagingDTO(startPos, length));
     }
 
     @DeleteMapping("/user/{username}/container/{containerTitle}/post/{postTitle}")

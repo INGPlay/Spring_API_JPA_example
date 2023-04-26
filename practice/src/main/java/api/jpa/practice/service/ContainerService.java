@@ -3,6 +3,7 @@ package api.jpa.practice.service;
 import api.jpa.practice.domain.request.ContainerPathDTO;
 import api.jpa.practice.domain.form.ContainerForm;
 import api.jpa.practice.domain.request.ContainerDTO;
+import api.jpa.practice.domain.request.PagingDTO;
 import api.jpa.practice.domain.request.UpdateContainerDTO;
 import api.jpa.practice.domain.response.ResponseWrapper;
 import api.jpa.practice.entity.Container;
@@ -35,6 +36,20 @@ public class ContainerService {
         }
 
         List<Container> containers = containerRepostiory.findContainersByUser(userResult);
+        responseWrapper.setObject(containers);
+
+        return responseWrapper;
+    }
+    // 오버로딩
+    public ResponseWrapper findContainersByUsername(String username, PagingDTO pagingDTO) {
+        ResponseWrapper responseWrapper = new ResponseWrapper();
+
+        User userResult = resultSupporter.getUserResult(responseWrapper, username);
+        if (userResult == null){
+            return responseWrapper;
+        }
+
+        List<Container> containers = containerRepostiory.findContainersByUser(userResult, pagingDTO);
         responseWrapper.setObject(containers);
 
         return responseWrapper;
@@ -106,6 +121,21 @@ public class ContainerService {
         User userResult = resultSupporter.getUserResult(responseWrapper, username);
 
         List<Container> containers = containerRepostiory.searchContainers(userResult, containerTitle);
+        responseWrapper.setObject(containers);
+
+        return responseWrapper;
+    }
+
+    @Transactional
+    public ResponseWrapper searchContainers(ContainerPathDTO containerPathDTO, PagingDTO pagingDTO){
+        ResponseWrapper responseWrapper = new ResponseWrapper();
+
+        String username = containerPathDTO.getUsername();
+        String containerTitle = containerPathDTO.getContainerTitle();
+
+        User userResult = resultSupporter.getUserResult(responseWrapper, username);
+
+        List<Container> containers = containerRepostiory.searchContainers(userResult, containerTitle, pagingDTO);
         responseWrapper.setObject(containers);
 
         return responseWrapper;

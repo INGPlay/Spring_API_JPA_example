@@ -18,9 +18,8 @@ public class ShortCut {
     @JoinColumn(name = "user_id")
     private User user;
 
-    @OneToOne//(fetch = FetchType.LAZY)
+    @OneToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "post_id")
-//    @JsonIgnore
     private Post post;
 
     public Long getId() {

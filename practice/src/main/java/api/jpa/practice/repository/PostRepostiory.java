@@ -2,6 +2,7 @@ package api.jpa.practice.repository;
 
 import api.jpa.practice.domain.form.PostForm;
 import api.jpa.practice.domain.request.ContainerPathDTO;
+import api.jpa.practice.domain.request.PagingDTO;
 import api.jpa.practice.domain.request.PostDTO;
 import api.jpa.practice.entity.Container;
 import api.jpa.practice.entity.Post;
@@ -54,12 +55,34 @@ public class PostRepostiory {
                 .getResultList();
     }
 
+    public List<Post> findPostsByContainerForm(ContainerPathDTO containerPathDTO, PagingDTO pagingDTO){
+        return em.createQuery(
+                        "select p from Post p" +
+                                " where p.container.user.username = :username and p.container.title = :containerTitle", Post.class)
+                .setParameter("username", containerPathDTO.getUsername())
+                .setParameter("containerTitle", containerPathDTO.getContainerTitle())
+                .setFirstResult(pagingDTO.getStartPos())
+                .setMaxResults(pagingDTO.getLength())
+                .getResultList();
+    }
+
     public List<Post> searchPosts(Container container, String postKeyword){
         return em.createQuery(
                 "select p from Post p" +
                         " where p.container = :container and p.title like concat('%', :postKeyword, '%') ", Post.class)
                 .setParameter("container", container)
                 .setParameter("postKeyword", postKeyword)
+                .getResultList();
+    }
+
+    public List<Post> searchPosts(Container container, String postKeyword, PagingDTO pagingDTO){
+        return em.createQuery(
+                        "select p from Post p" +
+                                " where p.container = :container and p.title like concat('%', :postKeyword, '%') ", Post.class)
+                .setParameter("container", container)
+                .setParameter("postKeyword", postKeyword)
+                .setFirstResult(pagingDTO.getStartPos())
+                .setMaxResults(pagingDTO.getLength())
                 .getResultList();
     }
 
