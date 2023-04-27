@@ -1,9 +1,9 @@
 package api.jpa.practice.repository;
 
 import api.jpa.practice.domain.form.PostForm;
-import api.jpa.practice.domain.request.ContainerPathDTO;
+import api.jpa.practice.domain.request.container.ContainerPathDTO;
 import api.jpa.practice.domain.request.PagingDTO;
-import api.jpa.practice.domain.request.PostDTO;
+import api.jpa.practice.domain.request.post.PostDTO;
 import api.jpa.practice.entity.Container;
 import api.jpa.practice.entity.Post;
 import api.jpa.practice.entity.embeddables.TimeInform;
@@ -25,23 +25,18 @@ public class PostRepostiory {
 
     public boolean insertPostByPostForm(PostDTO postDTO){
 
-        try{
-            Container container  = postDTO.getContainer();
-            String title = postDTO.getPostForm().getPostTitle();
-            String content = postDTO.getPostForm().getPostContent();
-            TimeInform timeInform = new TimeInform(new Date(), new Date());
+        Container container  = postDTO.getContainer();
+        String title = postDTO.getPostForm().getPostTitle();
+        String content = postDTO.getPostForm().getPostContent();
+        TimeInform timeInform = new TimeInform(new Date(), new Date());
 
-            Post post = new Post();
-            post.setContainer(container);
-            post.setTitle(title);
-            post.setContent(content);
-            post.setTimeInform(timeInform);
+        Post post = new Post();
+        post.setContainer(container);
+        post.setTitle(title);
+        post.setContent(content);
+        post.setTimeInform(timeInform);
 
-            em.persist(post);
-        } catch (Exception e){
-            e.printStackTrace();
-            return false;
-        }
+        em.persist(post);
 
         return true;
     }

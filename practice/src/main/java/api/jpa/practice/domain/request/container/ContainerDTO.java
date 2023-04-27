@@ -1,4 +1,4 @@
-package api.jpa.practice.domain.request;
+package api.jpa.practice.domain.request.container;
 
 import api.jpa.practice.entity.User;
 import lombok.AllArgsConstructor;

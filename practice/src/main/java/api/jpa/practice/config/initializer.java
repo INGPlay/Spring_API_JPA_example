@@ -2,7 +2,9 @@ package api.jpa.practice.config;
 
 import api.jpa.practice.domain.form.PostForm;
 import api.jpa.practice.domain.form.UserForm;
-import api.jpa.practice.domain.request.*;
+import api.jpa.practice.domain.request.container.ContainerPathDTO;
+import api.jpa.practice.domain.request.post.CreatePostDTO;
+import api.jpa.practice.domain.request.post.PostPathDTO;
 import api.jpa.practice.service.ContainerService;
 import api.jpa.practice.service.PostService;
 import api.jpa.practice.service.ShortCutService;

@@ -1,10 +1,12 @@
 package api.jpa.practice.service;
 
-import api.jpa.practice.domain.request.ContainerDTO;
+import api.jpa.practice.domain.request.container.ContainerDTO;
 import api.jpa.practice.domain.request.PagingDTO;
-import api.jpa.practice.domain.request.PostPathDTO;
+import api.jpa.practice.domain.request.post.PostPathDTO;
 import api.jpa.practice.domain.request.ShortCutDTO;
 import api.jpa.practice.domain.response.ResponseWrapper;
+import api.jpa.practice.domain.response.exception.exceptions.conflict.ConflictShortCutException;
+import api.jpa.practice.domain.response.exception.exceptions.notFound.NotFoundShortCut;
 import api.jpa.practice.entity.Container;
 import api.jpa.practice.entity.Post;
 import api.jpa.practice.entity.ShortCut;
@@ -32,28 +34,18 @@ public class ShortCutService {
         String conatainerTitle = postPathDTO.getConatainerTitle();
         String postTitle = postPathDTO.getPostTitle();
 
-        User userResult = resultSupporter.getUserResult(responseWrapper, username);
-        if (userResult == null){
-            return responseWrapper;
-        }
+        User userResult = resultSupporter.getUserResult(username);
 
         ContainerDTO containerDTO = new ContainerDTO();
         containerDTO.setUser(userResult);
         containerDTO.setContainerTitle(conatainerTitle);
-        Container containerResult = resultSupporter.getContainerResult(responseWrapper, containerDTO);
-        if(containerResult == null){
-            return responseWrapper;
-        }
+        Container containerResult = resultSupporter.getContainerResult(containerDTO);
 
-        Post postResult = resultSupporter.getPostResult(responseWrapper, containerResult, postTitle);
-        if (postResult == null){
-            return responseWrapper;
-        }
+        Post postResult = resultSupporter.getPostResult(containerResult, postTitle);
 
         Optional<ShortCut> optionalShortCut = shortCutRepository.findShortCutWithUser(userResult, postResult.getPostId());
         if(optionalShortCut.isPresent()){
-            responseWrapper.setErrorMessage("이미 등록된 포스트입니다.");
-            return responseWrapper;
+            throw new ConflictShortCutException();
         }
 
         ShortCutDTO shortCutDTO = new ShortCutDTO();
@@ -73,15 +65,11 @@ public class ShortCutService {
     public ResponseWrapper unlinkShortCut(String username, Long shortCutId){
         ResponseWrapper responseWrapper = new ResponseWrapper();
 
-        User userResult = resultSupporter.getUserResult(responseWrapper, username);
-        if (userResult == null){
-            return responseWrapper;
-        }
+        User userResult = resultSupporter.getUserResult(username);
 
         Optional<ShortCut> optionalShortCut = shortCutRepository.findShortCutWithUser(userResult, shortCutId);
         if (optionalShortCut.isEmpty()){
-            responseWrapper.setErrorMessage("해당하는 숏컷이 없습니다.");
-            return responseWrapper;
+            throw new NotFoundShortCut();
         }
         boolean isDeletedTemp = shortCutRepository.deleteShortCut(optionalShortCut.get());
 

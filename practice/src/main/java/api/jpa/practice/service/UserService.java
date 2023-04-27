@@ -5,6 +5,7 @@ import api.jpa.practice.domain.request.RegisterDTO;
 import api.jpa.practice.domain.response.RegisterResponse;
 import api.jpa.practice.domain.response.ResponseWrapper;
 import api.jpa.practice.domain.response.UserInformResponse;
+import api.jpa.practice.domain.response.exception.exceptions.conflict.ConflictUserException;
 import api.jpa.practice.entity.User;
 import api.jpa.practice.entity.enums.UserRole;
 import api.jpa.practice.repository.UserRepository;
@@ -26,13 +27,7 @@ public class UserService {
         RegisterResponse registerResponse = new RegisterResponse();
         // 중복 검사
         if (isDuplicatedUsername(userForm.getUsername())){
-            registerResponse.setRegister(false);
-            registerResponse.setDuplicate(true);
-
-            responseWrapper.setErrorMessage("이미 등록된 username 입니다.");
-            responseWrapper.setObject(registerResponse);
-
-            return responseWrapper;
+            throw new ConflictUserException();
         }
 
         RegisterDTO registerDTO = new RegisterDTO();
@@ -40,10 +35,11 @@ public class UserService {
         registerDTO.setPassword(userForm.getPassword());
         registerDTO.setUserRole(UserRole.NORMAL);
 
-        boolean isRegistred = userRepository.insertUserByRegisterDTO(registerDTO);
+        boolean isRegisteredTemp = userRepository.insertUserByRegisterDTO(registerDTO);
 
-        registerResponse.setRegister(isRegistred);
-        responseWrapper.setObject(registerResponse);
+        responseWrapper.setObject(new Object(){
+            private final boolean isRegistered = isRegisteredTemp;
+        });
         return responseWrapper;
     }
 
@@ -63,10 +59,7 @@ public class UserService {
 
         ResponseWrapper responseWrapper = new ResponseWrapper();
 
-        User userResult = resultSupporter.getUserResult(responseWrapper, username);
-        if (userResult == null){
-            return responseWrapper;
-        }
+        User userResult = resultSupporter.getUserResult(username);
 
         UserInformResponse userinformResponse = new UserInformResponse();
         userinformResponse.setUsername(userResult.getUsername());
@@ -82,7 +75,7 @@ public class UserService {
     public ResponseWrapper deleteUserByUsername(String username){
         ResponseWrapper responseWrapper = new ResponseWrapper();
 
-        User userResult = resultSupporter.getUserResult(responseWrapper, username);
+        User userResult = resultSupporter.getUserResult(username);
         if (userResult == null){
             return responseWrapper;
         }

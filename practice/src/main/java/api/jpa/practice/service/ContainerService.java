@@ -1,25 +1,26 @@
 package api.jpa.practice.service;
 
-import api.jpa.practice.domain.request.ContainerPathDTO;
+import api.jpa.practice.domain.request.container.ContainerPathDTO;
 import api.jpa.practice.domain.form.ContainerForm;
-import api.jpa.practice.domain.request.ContainerDTO;
+import api.jpa.practice.domain.request.container.ContainerDTO;
 import api.jpa.practice.domain.request.PagingDTO;
-import api.jpa.practice.domain.request.UpdateContainerDTO;
+import api.jpa.practice.domain.request.container.UpdateContainerDTO;
 import api.jpa.practice.domain.response.ResponseWrapper;
+import api.jpa.practice.domain.response.exception.exceptions.conflict.ConflictContainerException;
 import api.jpa.practice.entity.Container;
 import api.jpa.practice.entity.User;
 import api.jpa.practice.repository.ContainerRepostiory;
 import api.jpa.practice.repository.UserRepository;
 import api.jpa.practice.service.component.ResultSupporter;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
 import java.util.Optional;
 
+@Slf4j
 @Service
 @RequiredArgsConstructor
 public class ContainerService {
@@ -30,10 +31,7 @@ public class ContainerService {
     public ResponseWrapper findContainersByUsername(String username) {
         ResponseWrapper responseWrapper = new ResponseWrapper();
 
-        User userResult = resultSupporter.getUserResult(responseWrapper, username);
-        if (userResult == null){
-            return responseWrapper;
-        }
+        User userResult = resultSupporter.getUserResult(username);
 
         List<Container> containers = containerRepostiory.findContainersByUser(userResult);
         responseWrapper.setObject(containers);
@@ -44,10 +42,7 @@ public class ContainerService {
     public ResponseWrapper findContainersByUsername(String username, PagingDTO pagingDTO) {
         ResponseWrapper responseWrapper = new ResponseWrapper();
 
-        User userResult = resultSupporter.getUserResult(responseWrapper, username);
-        if (userResult == null){
-            return responseWrapper;
-        }
+        User userResult = resultSupporter.getUserResult(username);
 
         List<Container> containers = containerRepostiory.findContainersByUser(userResult, pagingDTO);
         responseWrapper.setObject(containers);
@@ -62,25 +57,19 @@ public class ContainerService {
 
         ResponseWrapper responseWrapper = new ResponseWrapper();
 
-        User userResult = resultSupporter.getUserResult(responseWrapper, username);
-        if (userResult == null){
-            return responseWrapper;
-        }
+        User userResult = resultSupporter.getUserResult(username);
 
         ContainerDTO containerDTO = new ContainerDTO();
         containerDTO.setUser(userResult);
         containerDTO.setContainerTitle(containerTitle);
         Optional<Container> optionalContainer = containerRepostiory.findContainer(containerDTO);
         if (optionalContainer.isPresent()){
-            responseWrapper.setErrorMessage("이미 존재하는 컨테이너 제목입니다.");
-            return responseWrapper;
+//            responseWrapper.setErrorMessage("이미 존재하는 컨테이너 제목입니다.");
+//            return responseWrapper;
+            throw new ConflictContainerException();
         }
 
         boolean isInsertedTemp = containerRepostiory.insertContainer(containerDTO);
-
-        if(!isInsertedTemp){
-            responseWrapper.setErrorMessage("생성이 실패하였습니다.");
-        }
 
         responseWrapper.setObject(new Object(){
             public final boolean isCreated = isInsertedTemp;
@@ -96,16 +85,10 @@ public class ContainerService {
         String username = containerPathDTO.getUsername();
         String containerTitle = containerPathDTO.getContainerTitle();
 
-        User userResult = resultSupporter.getUserResult(responseWrapper, username);
-        if (userResult == null){
-            return responseWrapper;
-        }
+        User userResult = resultSupporter.getUserResult(username);
 
         ContainerDTO containerDTO = new ContainerDTO(userResult, containerTitle);
-        Container containerResult = resultSupporter.getContainerResult(responseWrapper, containerDTO);
-        if (containerResult == null){
-            return responseWrapper;
-        }
+        Container containerResult = resultSupporter.getContainerResult(containerDTO);
 
         responseWrapper.setObject(containerResult);
         return responseWrapper;
@@ -118,8 +101,9 @@ public class ContainerService {
         String username = containerPathDTO.getUsername();
         String containerTitle = containerPathDTO.getContainerTitle();
 
-        User userResult = resultSupporter.getUserResult(responseWrapper, username);
+        User userResult = resultSupporter.getUserResult(username);
 
+        log.info(containerTitle);
         List<Container> containers = containerRepostiory.searchContainers(userResult, containerTitle);
         responseWrapper.setObject(containers);
 
@@ -133,9 +117,14 @@ public class ContainerService {
         String username = containerPathDTO.getUsername();
         String containerTitle = containerPathDTO.getContainerTitle();
 
-        User userResult = resultSupporter.getUserResult(responseWrapper, username);
+        User userResult = resultSupporter.getUserResult(username);
 
-        List<Container> containers = containerRepostiory.searchContainers(userResult, containerTitle, pagingDTO);
+        ContainerDTO containerDTO = new ContainerDTO();
+        containerDTO.setUser(userResult);
+        containerDTO.setContainerTitle(containerTitle);
+
+
+        List<Container> containers = containerRepostiory.searchContainers(containerDTO, pagingDTO);
         responseWrapper.setObject(containers);
 
         return responseWrapper;
@@ -147,16 +136,10 @@ public class ContainerService {
         String username = containerPathDTO.getUsername();
         String containerTitle = containerPathDTO.getContainerTitle();
 
-        User userResult = resultSupporter.getUserResult(responseWrapper, username);
-        if (userResult == null){
-            return responseWrapper;
-        }
+        User userResult = resultSupporter.getUserResult(username);
 
         ContainerDTO containerDTO = new ContainerDTO(userResult, containerTitle);
-        Container containerResult = resultSupporter.getContainerResult(responseWrapper, containerDTO);
-        if (containerResult == null){
-            return responseWrapper;
-        }
+        Container containerResult = resultSupporter.getContainerResult(containerDTO);
 
         boolean isDeletedTemp = containerRepostiory.deleteContainer(containerResult);
 
@@ -168,43 +151,17 @@ public class ContainerService {
     }
 
     @Transactional
-    public ResponseWrapper deleteContainerByContainerId(Long containerId){
-        ResponseWrapper responseWrapper = new ResponseWrapper();
-
-        Optional<Container> optionalContainer = containerRepostiory.findContainerById(containerId);
-
-        if (optionalContainer.isEmpty()){
-            responseWrapper.setErrorMessage("삭제할 대상이 없습니다.");
-            return responseWrapper;
-        }
-
-        boolean result = containerRepostiory.deleteContainer(optionalContainer.get());
-
-        Map<String, Boolean> resultMap = new HashMap<>();
-        resultMap.put("isDeleted", result);
-        responseWrapper.setObject(resultMap);
-
-        return responseWrapper;
-    }
-
-    @Transactional
     public ResponseWrapper updateContainer(UpdateContainerDTO updateContainerDTO){
         ResponseWrapper responseWrapper = new ResponseWrapper();
 
-        String username = updateContainerDTO.getUsername();
-        String containerTitle = updateContainerDTO.getContainerTitle();
+        String username = updateContainerDTO.getContainerPathDTO().getUsername();
+        String containerTitle = updateContainerDTO.getContainerPathDTO().getContainerTitle();
         ContainerForm containerForm = updateContainerDTO.getContainerForm();
 
-        User userResult = resultSupporter.getUserResult(responseWrapper, username);
-        if (userResult == null){
-            return responseWrapper;
-        }
+        User userResult = resultSupporter.getUserResult(username);
 
         ContainerDTO containerDTO = new ContainerDTO(userResult, containerTitle);
-        Container containerResult = resultSupporter.getContainerResult(responseWrapper, containerDTO);
-        if (containerResult == null){
-            return responseWrapper;
-        }
+        Container containerResult = resultSupporter.getContainerResult(containerDTO);
 
         boolean isUpdatedTemp = containerRepostiory.updateContainer(containerResult, containerForm);
 

@@ -1,4 +1,4 @@
-package api.jpa.practice.domain.request;
+package api.jpa.practice.domain.request.post;
 
 import lombok.Getter;
 import lombok.Setter;

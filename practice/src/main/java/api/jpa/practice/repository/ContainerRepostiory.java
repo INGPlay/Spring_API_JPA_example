@@ -1,7 +1,7 @@
 package api.jpa.practice.repository;
 
 import api.jpa.practice.domain.form.ContainerForm;
-import api.jpa.practice.domain.request.ContainerDTO;
+import api.jpa.practice.domain.request.container.ContainerDTO;
 import api.jpa.practice.domain.request.PagingDTO;
 import api.jpa.practice.entity.Container;
 import api.jpa.practice.entity.User;
@@ -24,22 +24,16 @@ public class ContainerRepostiory {
 
     public boolean insertContainer(ContainerDTO containerPathDTO){
 
-        try {
-            User user = containerPathDTO.getUser();
-            String title = containerPathDTO.getContainerTitle();
+        User user = containerPathDTO.getUser();
+        String title = containerPathDTO.getContainerTitle();
 
-            // timeInform 준비
-            TimeInform timeInform = new TimeInform(new Date(), new Date());
+        // timeInform 준비
+        TimeInform timeInform = new TimeInform(new Date(), new Date());
 
-            // -> Container 생성
-            Container container = new Container(user, timeInform, title);
+        // -> Container 생성
+        Container container = new Container(user, timeInform, title);
 
-            em.persist(container);
-
-        } catch (Exception e){
-            e.printStackTrace();
-            return false;
-        }
+        em.persist(container);
 
         return true;
     }
@@ -108,28 +102,23 @@ public class ContainerRepostiory {
     }
 
     public List<Container> searchContainers(User user, String title){
-        try{
-            List<Container> containers = em.createQuery(
-                    "select c from Container c" +
-                            " where c.user = :user and c.title like concat('%', :title, '%')", Container.class)
-                    .setParameter("user", user)
-                    .setParameter("title", title)
-                    .getResultList();
+        List<Container> containers = em.createQuery(
+                "select c from Container c" +
+                        " where c.user = :user and c.title like concat('%', :title, '%')", Container.class)
+                .setParameter("user", user)
+                .setParameter("title", title)
+                .getResultList();
 
-            return containers;
-        } catch (Exception e){
-            e.printStackTrace();
-            return new ArrayList<>();
-        }
+        return containers;
     }
 
-    public List<Container> searchContainers(User user, String title, PagingDTO pagingDTO){
+    public List<Container> searchContainers(ContainerDTO containerDTO, PagingDTO pagingDTO){
         try{
             List<Container> containers = em.createQuery(
                             "select c from Container c" +
-                                    " where c.user = :user and c.title like concat('%', :title, '%')", Container.class)
-                    .setParameter("user", user)
-                    .setParameter("title", title)
+                                    " where c.user = :user and c.title like concat('%', :containerTitle, '%')", Container.class)
+                    .setParameter("user", containerDTO.getUser())
+                    .setParameter("containerTitle", containerDTO.getContainerTitle())
                     .setFirstResult(pagingDTO.getStartPos())
                     .setMaxResults(pagingDTO.getLength())
                     .getResultList();
