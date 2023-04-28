@@ -58,7 +58,6 @@
 <details>
 <summary>상세 내용 확인</summary>
 <div markdown="1">
-- User
 
 ### 1.  POST /user 
 - 유저 등록  
@@ -582,7 +581,6 @@
 <details>
 <summary>상세 내용 확인</summary>
 <div markdown="1">
-- User
 
 ### 1. POST ​/user​/{username}​/container​/{containerTitle}​/post
 - 포스트 등록
@@ -901,7 +899,6 @@ Download
 <details>
 <summary>상세 내용 확인</summary>
 <div markdown="1">
-- User
 
 ### 1. POST ​/user​/{username}​/container​/{containerTitle}​/post​/{postTitle}​/shortcut
 - 즐겨찾기 추가
@@ -1032,7 +1029,7 @@ Download
 # 예외 처리
 
 ## 1. BindingResult
-BindingResult와 MessageSource를 활용한 Validation을 실행함
+BindingResult와 MessageSource를 활용하여 Controller로 들어오는 RequestBody에 대한 Validation을 진행함
 
 <details>
 <summary>상세 내용 확인</summary>
@@ -1041,13 +1038,16 @@ BindingResult와 MessageSource를 활용한 Validation을 실행함
 </details>
 
 ## 2. ExceptionHandler
-@RestControllerAdvice어노테이션과 ExeptionHandler를 활용한 예외 처리를 함
+@RestControllerAdvice과 @ExeptionHandler를 활용한 예외 처리를 함
+RuntimeException()을 상속하고 커스텀하여 Service계층에서의 예외를 처리하였음
 
 <details>
 <summary>상세 내용 확인</summary>
 <div markdown="1">
 작성 중
 </details>
+
+[상세 코드 확인](https://github.com/INGPlay/Spring_API_JPA_example/tree/master/practice/src/main/java/api/jpa/practice/exception)
 
 # 한 것들
 - DB 구성
