@@ -1,10 +1,9 @@
 package api.jpa.practice.service.component;
 
 import api.jpa.practice.domain.request.container.ContainerDTO;
-import api.jpa.practice.domain.response.ResponseWrapper;
-import api.jpa.practice.domain.response.exception.exceptions.notFound.NotFoundContainerException;
-import api.jpa.practice.domain.response.exception.exceptions.notFound.NotFoundPostException;
-import api.jpa.practice.domain.response.exception.exceptions.notFound.NotFoundUserException;
+import api.jpa.practice.exception.exceptions.notFound.NotFoundContainerException;
+import api.jpa.practice.exception.exceptions.notFound.NotFoundPostException;
+import api.jpa.practice.exception.exceptions.notFound.NotFoundUserException;
 import api.jpa.practice.entity.Container;
 import api.jpa.practice.entity.Post;
 import api.jpa.practice.entity.User;

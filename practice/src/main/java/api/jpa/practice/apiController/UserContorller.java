@@ -6,6 +6,8 @@ import api.jpa.practice.service.UserService;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
 import lombok.RequiredArgsConstructor;
+import org.springframework.validation.BindingResult;
+import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 
 @RestController
@@ -15,7 +17,7 @@ public class UserContorller {
 
     @ApiOperation(value = "유저 등록", notes = "해당 유저를 데이터베이스에 등록한다.")
     @PostMapping("/user")
-    public ResponseWrapper register(@RequestBody UserForm userForm){
+    public ResponseWrapper register(@RequestBody @Validated UserForm userForm){
         return userService.insertUser(userForm);
     }
 

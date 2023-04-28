@@ -1,7 +1,7 @@
-package api.jpa.practice.domain.response.exception.exceptions.notFound;
+package api.jpa.practice.exception.exceptions.notFound;
 
-import api.jpa.practice.domain.response.exception.ErrorCode;
-import api.jpa.practice.domain.response.exception.exceptions.abstracts.AbstractErrorCodeException;
+import api.jpa.practice.exception.ErrorCode;
+import api.jpa.practice.exception.exceptions.abstracts.AbstractErrorCodeException;
 import lombok.Getter;
 import lombok.Setter;
 

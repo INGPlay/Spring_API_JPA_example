@@ -12,6 +12,7 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.context.MessageSource;
 import org.springframework.context.support.MessageSourceAccessor;
+import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 
 @RestController
@@ -38,7 +39,7 @@ public class ContainerController {
     @ApiOperation(value = "컨테이너 등록", notes = "컨테이너를 등록한다.")
     @PostMapping("/user/{username}/container")
     public ResponseWrapper createContainer(@PathVariable(name = "username") String username,
-                                           @RequestBody ContainerForm containerForm){
+                                           @RequestBody @Validated ContainerForm containerForm){
 
         ContainerPathDTO containerPathDTO = new ContainerPathDTO();
         containerPathDTO.setUsername(username);
@@ -49,26 +50,26 @@ public class ContainerController {
 
     // 검색
     @ApiOperation(value = "컨테이너 검색", notes = "해당 유저의 컨테이너에서 제목에 키워드가 들어간 컨테이너를 조회한다.")
-    @GetMapping("/user/{username}/container-list/{containerTitle}")
+    @GetMapping("/user/{username}/container-list/{containerKeyword}")
     public ResponseWrapper searchContainers(@PathVariable(name = "username") String username,
-                                            @PathVariable(name = "containerTitle") String containerTitle){
+                                            @PathVariable(name = "containerKeyword") String containerKeyword){
 
         ContainerPathDTO containerPathDTO = new ContainerPathDTO();
         containerPathDTO.setUsername(username);
-        containerPathDTO.setContainerTitle(containerTitle);
+        containerPathDTO.setContainerTitle(containerKeyword);
 
         return containerService.searchContainers(containerPathDTO);
     }
 
     @ApiOperation(value = "컨테이너 검색 (paging)", notes = "해당 유저의 컨테이너에서 제목에 키워드가 들어간 컨테이너 중 특정 범위를 조회한다.")
-    @GetMapping("/user/{username}/container-list/{containerTitle}/{startPos}/{length}")
+    @GetMapping("/user/{username}/container-list/{containerKeyword}/{startPos}/{length}")
     public ResponseWrapper searchContainersPaging(@PathVariable(name = "username") String username,
-                                                  @PathVariable(name = "containerTitle") String containerTitle,
+                                                  @PathVariable(name = "containerKeyword") String containerKeyword,
                                                   @PathVariable(name = "startPos") int startPos,
                                                   @PathVariable(name = "length") int length){
         ContainerPathDTO containerPathDTO = new ContainerPathDTO();
         containerPathDTO.setUsername(username);
-        containerPathDTO.setContainerTitle(containerTitle);
+        containerPathDTO.setContainerTitle(containerKeyword);
 
         return containerService.searchContainers(containerPathDTO, new PagingDTO(startPos, length));
     }
@@ -100,7 +101,7 @@ public class ContainerController {
     @PutMapping("/user/{username}/container/{containerTitle}")
     public ResponseWrapper updateContainer(@PathVariable(name = "username") String username,
                                            @PathVariable(name = "containerTitle") String containerTitle,
-                                           @RequestBody ContainerForm containerForm){
+                                           @RequestBody @Validated ContainerForm containerForm){
 
         ContainerPathDTO containerPathDTO = new ContainerPathDTO();
         containerPathDTO.setUsername(username);

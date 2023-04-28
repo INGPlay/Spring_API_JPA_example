@@ -7,7 +7,10 @@ import api.jpa.practice.domain.response.ResponseWrapper;
 import api.jpa.practice.service.ShortCutService;
 import io.swagger.annotations.ApiOperation;
 import lombok.RequiredArgsConstructor;
+import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
+
+import javax.validation.Valid;
 
 @RestController
 @RequiredArgsConstructor
@@ -31,7 +34,7 @@ public class ShortCutController {
     @ApiOperation(value = "즐겨찾기 삭제", notes = "해당 포스트를 즐겨찾기 목록에서 삭제한다.")
     @DeleteMapping("/user/{username}/shortcut")
     public ResponseWrapper unlinkShortCut(@PathVariable String username,
-                                          @RequestBody InputIdForm inputIdForm){
+                                          @RequestBody @Validated InputIdForm inputIdForm){
         return shortCutService.unlinkShortCut(username, inputIdForm.getShortCutId());
     }
 

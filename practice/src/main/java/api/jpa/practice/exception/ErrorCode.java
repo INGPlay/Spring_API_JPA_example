@@ -1,4 +1,4 @@
-package api.jpa.practice.domain.response.exception;
+package api.jpa.practice.exception;
 
 import lombok.AllArgsConstructor;
 import lombok.Getter;

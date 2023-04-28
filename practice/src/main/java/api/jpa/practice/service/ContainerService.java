@@ -6,7 +6,7 @@ import api.jpa.practice.domain.request.container.ContainerDTO;
 import api.jpa.practice.domain.request.PagingDTO;
 import api.jpa.practice.domain.request.container.UpdateContainerDTO;
 import api.jpa.practice.domain.response.ResponseWrapper;
-import api.jpa.practice.domain.response.exception.exceptions.conflict.ConflictContainerException;
+import api.jpa.practice.exception.exceptions.conflict.ConflictContainerException;
 import api.jpa.practice.entity.Container;
 import api.jpa.practice.entity.User;
 import api.jpa.practice.repository.ContainerRepostiory;

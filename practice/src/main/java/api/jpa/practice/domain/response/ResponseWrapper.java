@@ -7,5 +7,4 @@ import lombok.Setter;
 @Setter
 public class ResponseWrapper {
     private Object object;
-//    private String errorMessage;
 }

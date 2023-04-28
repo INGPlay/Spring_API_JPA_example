@@ -2,10 +2,9 @@ package api.jpa.practice.service;
 
 import api.jpa.practice.domain.form.UserForm;
 import api.jpa.practice.domain.request.RegisterDTO;
-import api.jpa.practice.domain.response.RegisterResponse;
 import api.jpa.practice.domain.response.ResponseWrapper;
 import api.jpa.practice.domain.response.UserInformResponse;
-import api.jpa.practice.domain.response.exception.exceptions.conflict.ConflictUserException;
+import api.jpa.practice.exception.exceptions.conflict.ConflictUserException;
 import api.jpa.practice.entity.User;
 import api.jpa.practice.entity.enums.UserRole;
 import api.jpa.practice.repository.UserRepository;
@@ -13,6 +12,8 @@ import api.jpa.practice.service.component.ResultSupporter;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+
+import java.util.HashMap;
 
 @Service
 @RequiredArgsConstructor
@@ -24,7 +25,6 @@ public class UserService {
     public ResponseWrapper insertUser(UserForm userForm){
 
         ResponseWrapper responseWrapper = new ResponseWrapper();
-        RegisterResponse registerResponse = new RegisterResponse();
         // 중복 검사
         if (isDuplicatedUsername(userForm.getUsername())){
             throw new ConflictUserException();
@@ -35,10 +35,12 @@ public class UserService {
         registerDTO.setPassword(userForm.getPassword());
         registerDTO.setUserRole(UserRole.NORMAL);
 
-        boolean isRegisteredTemp = userRepository.insertUserByRegisterDTO(registerDTO);
+        boolean isRegister = userRepository.insertUserByRegisterDTO(registerDTO);
 
-        responseWrapper.setObject(new Object(){
-            private final boolean isRegistered = isRegisteredTemp;
+        responseWrapper.setObject(new HashMap<String, Boolean>() {
+            {
+                put("isRegister", isRegister);
+            }
         });
         return responseWrapper;
     }
@@ -80,10 +82,12 @@ public class UserService {
             return responseWrapper;
         }
 
-        boolean isDeletedTemp = userRepository.deleteUserByUser(userResult);
+        boolean isDeleted = userRepository.deleteUserByUser(userResult);
 
-        responseWrapper.setObject(new Object(){
-            public Boolean isDeleted = isDeletedTemp;
+        responseWrapper.setObject(new HashMap<String, Boolean>(){
+            {
+                put("isDeleted", isDeleted);
+            }
         });
         return responseWrapper;
     }

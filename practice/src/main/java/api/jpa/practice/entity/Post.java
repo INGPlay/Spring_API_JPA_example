@@ -23,7 +23,7 @@ public class Post {
     private Container container;
 
     @JsonIgnore
-    @OneToOne(mappedBy = "post", fetch = FetchType.LAZY)
+    @OneToOne(mappedBy = "post", fetch = FetchType.LAZY, cascade = CascadeType.ALL)
     private ShortCut shortCut;
 
     @Embedded

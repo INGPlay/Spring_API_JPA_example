@@ -10,6 +10,7 @@ import api.jpa.practice.domain.response.ResponseWrapper;
 import api.jpa.practice.service.PostService;
 import io.swagger.annotations.ApiOperation;
 import lombok.RequiredArgsConstructor;
+import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 
 @RestController
@@ -47,7 +48,7 @@ public class PostController {
     @PostMapping("/user/{username}/container/{containerTitle}/post")
     public ResponseWrapper createPost(@PathVariable(name = "username") String username,
                                       @PathVariable(name = "containerTitle") String containerTitle,
-                                      @RequestBody PostForm postForm){
+                                      @RequestBody @Validated PostForm postForm){
         CreatePostDTO createPostDTO = new CreatePostDTO();
         createPostDTO.setUsername(username);
         createPostDTO.setContainerTitle(containerTitle);
@@ -69,29 +70,29 @@ public class PostController {
         return postService.findPost(postPathDTO);
     }
     @ApiOperation(value = "포스트 검색", notes = "해당 유저의 컨테이너에서 제목에 키워드가 들어간 포스트를 조회한다.")
-    @GetMapping("/user/{username}/container/{containerTitle}/post-list/{postTitle}")
+    @GetMapping("/user/{username}/container/{containerTitle}/post-list/{postKeyword}")
     public ResponseWrapper searchPosts(@PathVariable(name = "username") String username,
                                        @PathVariable(name = "containerTitle") String containerTitle,
-                                       @PathVariable(name = "postTitle") String postTitle){
+                                       @PathVariable(name = "postKeyword") String postKeyword){
         PostPathDTO postPathDTO = new PostPathDTO();
         postPathDTO.setUsername(username);
         postPathDTO.setConatainerTitle(containerTitle);
-        postPathDTO.setPostTitle(postTitle);
+        postPathDTO.setPostTitle(postKeyword);
 
         return postService.searchPosts(postPathDTO);
     }
 
     @ApiOperation(value = "포스트 검색 (paging)", notes = "해당 유저의 컨테이너에서 제목에 키워드가 들어간 포스트 중 특정 범위를 조회한다.")
-    @GetMapping("/user/{username}/container/{containerTitle}/post-list/{postTitle}/{startPos}/{length}")
+    @GetMapping("/user/{username}/container/{containerTitle}/post-list/{postKeyword}/{startPos}/{length}")
     public ResponseWrapper searchPostsPaging(@PathVariable(name = "username") String username,
                                              @PathVariable(name = "containerTitle") String containerTitle,
-                                             @PathVariable(name = "postTitle") String postTitle,
+                                             @PathVariable(name = "postKeyword") String postKeyword,
                                              @PathVariable(name = "startPos") int startPos,
                                              @PathVariable(name = "length") int length){
         PostPathDTO postPathDTO = new PostPathDTO();
         postPathDTO.setUsername(username);
         postPathDTO.setConatainerTitle(containerTitle);
-        postPathDTO.setPostTitle(postTitle);
+        postPathDTO.setPostTitle(postKeyword);
 
         return postService.searchPosts(postPathDTO, new PagingDTO(startPos, length));
     }
@@ -113,7 +114,7 @@ public class PostController {
     public ResponseWrapper updatePost(@PathVariable(name = "username") String username,
                                       @PathVariable(name = "containerTitle") String containerTitle,
                                       @PathVariable(name = "postTitle") String postTitle,
-                                      @RequestBody PostForm postForm){
+                                      @RequestBody @Validated PostForm postForm){
 
         UpdatePostDTO updatePostDTO = new UpdatePostDTO();
         updatePostDTO.setUsername(username);

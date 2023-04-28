@@ -1,6 +1,6 @@
-package api.jpa.practice.domain.response.exception.exceptions.abstracts;
+package api.jpa.practice.exception.exceptions.abstracts;
 
-import api.jpa.practice.domain.response.exception.ErrorCode;
+import api.jpa.practice.exception.ErrorCode;
 import lombok.Getter;
 
 @Getter

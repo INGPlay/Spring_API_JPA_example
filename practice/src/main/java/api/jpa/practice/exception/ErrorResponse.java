@@ -1,4 +1,4 @@
-package api.jpa.practice.domain.response.exception;
+package api.jpa.practice.exception;
 
 import lombok.AllArgsConstructor;
 import lombok.Getter;
@@ -9,7 +9,7 @@ import org.springframework.http.HttpStatus;
 @AllArgsConstructor
 @NoArgsConstructor
 @Getter @Setter
-public class ErrorResponse {
+public class ErrorResponse<T> {
     private HttpStatus httpStatus;
-    private String errorMessage;
+    private T errorMessage;
 }
