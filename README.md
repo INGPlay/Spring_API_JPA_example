@@ -1031,20 +1031,183 @@ Download
 ## 1. BindingResult
 BindingResult와 MessageSource를 활용하여 Controller로 들어오는 RequestBody에 대한 Validation을 진행함
 
+- Validation에 통과하지 못한 요청은 Bad Request(400)을 반환한다.
+
 <details>
 <summary>상세 내용 확인</summary>
 <div markdown="1">
-작성 중
+
+- 검증할 클래스에 검증 어노테이션을 붙인다.
+```java
+@Getter @Setter
+public class UserForm {
+    @NotNull
+    @Size(min = 4, max = 10)
+    @Pattern(regexp = "^([a-z0-9]*)$")
+    private String username;
+
+    @NotNull
+    @Size(min = 4, max = 20)
+    @Pattern(regexp = "^([A-Za-z0-9!@#$%]*)$")
+    private String password;
+}
+```
+
+- Controller 매개변수에 @Valid나 @Validated를 붙인다.
+```java
+    @ApiOperation(value = "유저 등록", notes = "해당 유저를 데이터베이스에 등록한다.")
+    @PostMapping("/user")
+    public ResponseWrapper register(@RequestBody @Validated UserForm userForm){
+        return userService.insertUser(userForm);
+    }
+```
+
+- 검증할 어노테이션에 맞는 메시지를 작성한다.
+  - application.properties나 yml에서 message.properties 파일 연동하기
+```properties
+Size.userForm.username=유저이름은 {2}자에서 {1}자 길이의 문자로 이루어져야 합니다.
+Size.userForm.password=비밀번호는 {2}자에서 {1}자 길이의 문자로 이루어져야 합니다.
+```
+
+- 검증 어노테이션은 전부 통과되지 않으면 MethodArgumentNotValidException 예외를 선언하므로, ExceptionHandler로 이를 받고 처리한다.
+- 이 방식으로 처리된 요청은 Bad Request(400)을 반환한다.
+```java
+@Slf4j
+@RestControllerAdvice
+@RequiredArgsConstructor
+public class ErrorHandler {
+
+    private final MessageSource messageSource;
+
+    // ...
+
+    @ExceptionHandler({MethodArgumentNotValidException.class})
+    protected ResponseEntity<ErrorResponse<List<String>>> HaveNotException(MethodArgumentNotValidException exception){
+        BindingResult bindingResult = exception.getBindingResult();
+        log.info("{}", bindingResult);
+        List<String> errorCollect = bindingResult.getAllErrors().stream()
+                .map(e -> {
+                    return messageSource.getMessage(e, null);
+                })
+                .collect(Collectors.toList());
+
+        HttpStatus httpStatus = HttpStatus.BAD_REQUEST;
+
+        ErrorResponse<List<String>> response = new ErrorResponse<>(httpStatus, errorCollect);
+
+        return new ResponseEntity<>(response, httpStatus);
+    }
+
+    // ...
+
+}
+```
+
 </details>
 
 ## 2. ExceptionHandler
 @RestControllerAdvice과 @ExeptionHandler를 활용한 예외 처리를 함
 RuntimeException()을 상속하고 커스텀하여 Service계층에서의 예외를 처리하였음
 
+- 입력값 중에 데이터베이스 내에 대상 데이터가 없다면 Not Found(404)를 반환한다.
+```java
+@AllArgsConstructor
+@Getter
+public enum ErrorCode {
+
+    NOT_FOUND_USER(HttpStatus.NOT_FOUND, "존재하지 않는 유저입니다."),
+    NOT_FOUND_CONTAINER(HttpStatus.NOT_FOUND, "존재하지 않는 컨테이너입니다."),
+    NOT_FOUND_POST(HttpStatus.NOT_FOUND, "존재하지 않는 포스트입니다."),
+    NOT_FOUND_SHORT_CUT(HttpStatus.NOT_FOUND, "존재하지 않는 즐겨찾기 입니다."),
+
+    CONFLICT_USERNAME(HttpStatus.CONFLICT, "이미 등록된 유저가 있습니다."),
+    CONFLICT_CONTAINER(HttpStatus.CONFLICT, "같은 이름의 컨테이너가 있습니다."),
+    CONFLICT_POST(HttpStatus.CONFLICT, "같은 이름의 포스트가 있습니다."),
+    CONFLICT_SHORT_CUT(HttpStatus.CONFLICT, "같은 이름의 즐겨찾기가 있습니다."),
+
+    USER_HAVE_NOT_CONTAINER(HttpStatus.NOT_FOUND, "대상 유저가 컨테이너를 가지고 있지 않습니다."),
+    CONTAINER_HAVE_NOT_POST(HttpStatus.NOT_FOUND, "대상 컨테이너가 포스트를 가지고 있지 않습니다.")
+```
+- 입력값과 데이터베이스 내에 중복된 값이 있다면 Conflict(409)를 반환한다.
+```java
+    NO_TARGET_USER(HttpStatus.NOT_FOUND, "삭제할 유저가 없습니다."),
+    NO_TARGET_CONTAINER(HttpStatus.NOT_FOUND, "삭제할 컨테이너가 없습니다."),
+    NO_TARGET_POST(HttpStatus.NOT_FOUND, "삭제할 포스트가 없습니다."),
+
+}
+```
 <details>
 <summary>상세 내용 확인</summary>
 <div markdown="1">
-작성 중
+
+- 에러 코드를 한 눈에 볼 수 있도록 Enum에 에러코드를 저장하는 방식으로 작성
+```java
+@AllArgsConstructor
+@Getter
+public enum ErrorCode {
+
+    //404 NOT_FOUND 잘못된 리소스 접근
+    NOT_FOUND_USER(HttpStatus.NOT_FOUND, "존재하지 않는 유저입니다."),
+    NOT_FOUND_CONTAINER(HttpStatus.NOT_FOUND, "존재하지 않는 컨테이너입니다."),
+    NOT_FOUND_POST(HttpStatus.NOT_FOUND, "존재하지 않는 포스트입니다."),
+    NOT_FOUND_SHORT_CUT(HttpStatus.NOT_FOUND, "존재하지 않는 즐겨찾기 입니다."),
+
+    // ...
+
+    private final HttpStatus httpStatus;
+    private final String message;
+}
+```
+
+- 편의를 위해 RuntimeException을 상속받는 가상 클래스 구현
+```java
+@Getter
+abstract public class AbstractErrorCodeException extends RuntimeException {
+    private final ErrorCode errorCode;
+
+    public AbstractErrorCodeException() {
+        this.errorCode = setErrorCode();
+    }
+
+    abstract protected ErrorCode setErrorCode();
+}
+```
+
+- AbstractErrorCodeException 가상 클래스 구현
+```java
+public class NotFoundUserException extends AbstractErrorCodeException {
+
+    @Override
+    protected ErrorCode setErrorCode() {
+        return ErrorCode.NOT_FOUND_USER;
+    }
+}
+```
+
+- ExceptionHandler 구현, 서비스 로직 중에 처리된 예외를 처리한다.
+- 이 방식으로 처리된 예외는 Not Found(404) 혹은 Conflict(409)로 처리된다.
+```java
+@Slf4j
+@RestControllerAdvice
+@RequiredArgsConstructor
+public class ErrorHandler {
+
+    // ...
+
+    @ExceptionHandler({NotFoundUserException.class, NotFoundContainerException.class,
+            NotFoundPostException.class, NotFoundShortCut.class})
+    protected ResponseEntity<ErrorResponse<String>> NotFoundException(AbstractErrorCodeException exception){
+
+        ErrorResponse<String> response = getErrorResponse(exception, "NotFoundException");
+
+        return new ResponseEntity<>(response, exception.getErrorCode().getHttpStatus());
+    }
+
+    // ...
+
+}
+```
+
 </details>
 
 [상세 코드 확인](https://github.com/INGPlay/Spring_API_JPA_example/tree/master/practice/src/main/java/api/jpa/practice/exception)
