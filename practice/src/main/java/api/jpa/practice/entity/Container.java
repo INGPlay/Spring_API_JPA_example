@@ -40,6 +40,9 @@ public class Container {
     }
 
     public void setUser(User user){
+        if (this.user != null){
+            this.user.getContainers().remove(this);
+        }
         this.user = user;
         user.getContainers().add(this);
     }

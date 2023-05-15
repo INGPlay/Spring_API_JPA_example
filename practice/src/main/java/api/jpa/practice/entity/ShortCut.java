@@ -31,6 +31,9 @@ public class ShortCut {
     }
 
     public void setUser(User user) {
+        if (this.user != null){
+            this.user.getShortCut().remove(this);
+        }
         user.getShortCut().add(this);
         this.user = user;
     }

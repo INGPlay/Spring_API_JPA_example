@@ -33,6 +33,9 @@ public class Post {
     private String content;
 
     public void setContainer(Container container){
+        if (this.container != null){
+            this.container.getPosts().remove(this);
+        }
         this.container = container;
         container.getPosts().add(this);
     }
